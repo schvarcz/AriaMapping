@@ -13,7 +13,9 @@ Architecture::Architecture() : QObject()
 Architecture::~Architecture()
 {
     wallFollowing->stop();
+    miniMap->stop();
     mRobot->stop();
+    delete mRobot;
 }
 
 void Architecture::startWallFollowing()
@@ -35,4 +37,19 @@ void Architecture::setMiniMapGraphicsView(QGraphicsView *view)
 
     miniMap = new Mapping(mRobot,view);
     miniMap->start();
+}
+
+void Architecture::forward(int distance)
+{
+    mRobot->move(distance);
+}
+
+void Architecture::backward(int distance)
+{
+    mRobot->move(-distance);
+}
+
+void Architecture::rotate(float degrees)
+{
+    mRobot->rotate(degrees);
 }

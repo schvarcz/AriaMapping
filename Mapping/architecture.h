@@ -17,6 +17,9 @@ public:
     ~Architecture();
     void startWallFollowing();
     void stopWallFollowing();
+    void forward(int distance);
+    void backward(int distance);
+    void rotate(float degrees);
     void setMiniMapGraphicsView(QGraphicsView *view);
     QGraphicsScene* miniMapScene(){ return miniMap->mScene;}
     Mapping *miniMap;
