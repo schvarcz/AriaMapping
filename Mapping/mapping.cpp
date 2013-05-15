@@ -35,27 +35,57 @@ void Mapping::resetMap()
     {
         for(int j=0; j<MAP_LENGTH;j++)
         {
-            map[i][j] = 1.0;
+            map[i][j] = 0.7;
         }
     }
     mScene->clear();
 }
 
-void Mapping::render()
+void Mapping::calculateMap()
 {
-    for(int k =0;k<180;k++)
+    for(int y=0; y<MAP_LENGTH;y++)
     {
-        float range = (float)sensors->at(k).getRange()/celRange;
-        int x = range*cos((180-k)*M_PI/180)+MAP_LENGTH/2;
-        int y = range*sin(k*M_PI/180);
-        if((x < MAP_LENGTH) && (x>=0) && (y < MAP_LENGTH) && (y >= 0))
+        for(int x=0; x<MAP_LENGTH;x++)
         {
-            map[x][y] = 0.0;
+            int angle = round(atan2(
+                                  (MAP_LENGTH-y)*celRange,
+                                  (x-MAP_LENGTH/2)*celRange
+                                  )*180/M_PI);
+            float distance = sqrt(
+                                     pow(
+                                         (x-MAP_LENGTH/2)*celRange,
+                                         2
+                                         )
+                                     +pow(
+                                         (y-MAP_LENGTH)*celRange,
+                                         2
+                                         )
+                                     );
+            float reading = (float)sensors->at(180-angle).getRange();
+
+            //cout << x << " " << y << " " << angle << " " << distance << " " << reading << " " << celRange << endl;
+
+            float variacao = celRange/2;
+
+            if( (reading + variacao > distance) && (reading - variacao <= distance))
+            {
+                //cout << "Parede... " << endl;
+                map[x][y] = 0.0;
+            }
+            if(reading-variacao > distance)
+            {
+                //cout << "Área vaga... " << endl;
+                map[x][y] = 1.0;
+            }
         }
     }
+}
 
-    float celWidth = ((float)mView->width())/MAP_LENGTH;
-    float celHeight = ((float)mView->height())/MAP_LENGTH;
+void Mapping::render()
+{
+
+    float celWidth = floor(((float)mView->width())/MAP_LENGTH);
+    float celHeight = floor(((float)mView->height())/MAP_LENGTH);
 
     mScene = new QGraphicsScene();
 
@@ -65,22 +95,25 @@ void Mapping::render()
         for(int x=0; x<MAP_LENGTH;x++)
         {
             //cout << map[x][MAP_LENGTH-1-y] << " ";
-            if(map[x][MAP_LENGTH-1-y] == 0.0)
-            {
-                drawBox(round(x)*celWidth,round(y)*celHeight,celWidth,celHeight);
-            }
+            int value = round(255*map[x][y]);
+            drawBox(
+                        round(x)*celWidth,
+                        round(y)*celHeight,
+                        celWidth,
+                        celHeight,
+                        QBrush(QColor(value,value,value))
+                        );
         }
         //cout << endl;
     }
     emit updateScene(mScene);
 }
 
-void Mapping::drawBox(double x, double y, double width, double height)
+void Mapping::drawBox(double x, double y, double width, double height, QBrush color)
 {
     QPolygonF box;
     box << QPointF(x,y) << QPointF(x+width,y) << QPointF(x+width,y+height) << QPointF(x,y+height);
-    //mScene->addPolygon(box,QPen(),QBrush(QColor(0,0,0)));
-    mScene->addPolygon(box);
+    mScene->addPolygon(box,QPen(Qt::NoPen),color);
 }
 
 void Mapping::keepRendering()
@@ -90,8 +123,9 @@ void Mapping::keepRendering()
         resetMap();
         mRobot->readingSensors();
         sensors = mRobot->getLaserRanges();
+        calculateMap();
         render();
-        ArUtil::sleep(33);
+        ArUtil::sleep(50);
     }
     thread->exit();
 }

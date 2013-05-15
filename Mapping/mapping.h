@@ -8,7 +8,7 @@
 #include <Aria.h>
 #include <qmath.h>
 
-#define MAP_LENGTH 100
+#define MAP_LENGTH 30
 
 using namespace std;
 class Mapping : public QObject
@@ -22,8 +22,9 @@ public:
     
 private:
     void resetMap();
+    void calculateMap();
     void render();
-    void drawBox(double xi,double yi,double xf,double yf);
+    void drawBox(double xi,double yi,double xf,double yf, QBrush color);
     Robot *mRobot;
     QGraphicsView *mView;
     vector<ArSensorReading> *sensors;
