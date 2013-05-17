@@ -36,37 +36,48 @@ void MainWindow::startStopRobot()
     if(ui->pbStartStop->isChecked())
     {
         ui->pbStartStop->setText("Stop Robot");
-        architecture->startWallFollowing();
+        architecture.startWallFollowing();
     }
     else
     {
         ui->pbStartStop->setText("Start Robot");
-        architecture->stopWallFollowing();
+        architecture.stopWallFollowing();
     }
 }
 
-void MainWindow::updateGraphics(QGraphicsScene* newScene)
+void MainWindow::updateMiniGraphics(QGraphicsScene* newScene)
 {
+    QGraphicsScene* oldScene = ui->GVSensor->scene();
     ui->GVSensor->setScene(newScene);
+    oldScene->clear();
+    delete oldScene;
+}
+
+void MainWindow::updateWorldGraphics(QGraphicsScene* newScene)
+{
+    QGraphicsScene* oldScene = ui->GVMap->scene();
+    ui->GVMap->setScene(newScene);
+    oldScene->clear();
+    delete oldScene;
 }
 
 void MainWindow::on_pbUp_clicked()
 {
-    architecture->forward(100);
+    architecture.forward(100);
 }
 
 void MainWindow::on_pbDown_clicked()
 {
-    architecture->backward(100);
+    architecture.backward(100);
 }
 
 void MainWindow::on_pbLeft_clicked()
 {
-    architecture->rotate(10);
+    architecture.rotate(10);
 }
 
 void MainWindow::on_pbRight_clicked()
 {
-    architecture->rotate(-10);
+    architecture.rotate(-10);
 }
 

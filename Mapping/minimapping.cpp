@@ -10,7 +10,7 @@ MiniMapping::MiniMapping(Robot *robot,QGraphicsView *view) :
 
     mView->setScene(mScene);
     this->moveToThread(thread);
-    rangeMax = 30000;
+    rangeMax = 3000;
 
     celRange = rangeMax/MAP_LENGTH_MINI;
 
@@ -107,7 +107,6 @@ void MiniMapping::render()
     float celHeight = ((float)mView->height())/MAP_LENGTH_MINI;
 
     mScene = new QGraphicsScene();
-
     //cout << "\n\n\n\n" << "Printando visão do sensor: " << endl;
     for(int y=0; y<MAP_LENGTH_MINI;y++)
     {
@@ -115,17 +114,14 @@ void MiniMapping::render()
         {
             //cout << map[x][MAP_LENGTH-1-y] << " ";
 
-            if(map[x][y] < 1.0)
-            {
-                int value = 255*map[x][y];
-                drawBox(
-                            x*celWidth,
-                            y*celHeight,
-                            celWidth,
-                            celHeight,
-                            QBrush(QColor(value,value,value))
-                            );
-            }
+            int value = 255*map[x][y];
+            drawBox(
+                        x*celWidth,
+                        y*celHeight,
+                        celWidth,
+                        celHeight,
+                        QBrush(QColor(value,value,value))
+                        );
         }
         //cout << endl;
     }
@@ -149,6 +145,7 @@ void MiniMapping::keepRendering()
             sensors->clear();
             delete sensors;
         }
+        mRobot->readingSensors();
         sensors = mRobot->getLaserRanges();
         calculateMap();
         render();

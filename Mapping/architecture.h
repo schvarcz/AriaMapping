@@ -31,7 +31,6 @@ public:
 private:
     WallFollowing *wallFollowing;
     Robot *mRobot;
-    QThread *thread;
 
 public slots:
 

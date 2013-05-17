@@ -141,9 +141,15 @@ void Mapping::drawBox(double x, double y, double width, double height, QBrush co
 
 void Mapping::keepRendering()
 {
+  resetMap();
   while(run)
   {
-      //resetMap();
+      if(sensors != NULL)
+      {
+          sensors->clear();
+          delete sensors;
+      }
+      mRobot->readingSensors();
       sensors = mRobot->getLaserRanges();
       calculateMap();
       render();

@@ -10,7 +10,6 @@ Architecture::Architecture() : QObject()
 
     thread = new QThread();
     wallFollowing = new WallFollowing(mRobot);
-    mRobot->start();
 }
 
 Architecture::~Architecture()
@@ -18,6 +17,7 @@ Architecture::~Architecture()
     wallFollowing->stop();
     miniMap->stop();
     mRobot->stop();
+    mRobot->deleteLater();
     delete mRobot;
 }
 
@@ -52,7 +52,7 @@ void Architecture::setWorldMapGraphicsView(QGraphicsView *view)
 
     worldMap = new Mapping(mRobot,view);
     connect(worldMap,SIGNAL(updateScene(QGraphicsScene*)),this,SIGNAL(updateWorldMapScene(QGraphicsScene*)));
-    //worldMap->start();
+    worldMap->start();
 }
 
 void Architecture::forward(int distance)

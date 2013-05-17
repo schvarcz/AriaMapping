@@ -8,7 +8,7 @@
 #include <Aria.h>
 #include <qmath.h>
 
-#define MAP_LENGTH_WORLD 300
+#define MAP_LENGTH_WORLD 60
 
 using namespace std;
 
@@ -28,7 +28,7 @@ private:
     void drawBox(double xi,double yi,double xf,double yf, QBrush color);
     Robot *mRobot;
     QGraphicsView *mView;
-    vector<ArSensorReading>* sensors;
+    vector<ArSensorReading> *sensors = NULL;
     QThread *thread;
     float map[MAP_LENGTH_WORLD][MAP_LENGTH_WORLD];
     bool run;

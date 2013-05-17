@@ -8,9 +8,10 @@
 #include <Aria.h>
 #include <qmath.h>
 
-#define MAP_LENGTH_MINI 30
+#define MAP_LENGTH_MINI 60
 
 using namespace std;
+
 class MiniMapping : public QObject
 {
     Q_OBJECT

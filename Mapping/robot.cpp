@@ -76,6 +76,10 @@ void Robot::readingSensors()
     if(this->isConnected() && sick.isConnected())
     {
         sick.lockDevice();
+        if(lasers)
+        {
+            lasers->clear();
+        }
         lasers = sick.getRawReadingsAsVector();
         sick.unlockDevice();
     }
