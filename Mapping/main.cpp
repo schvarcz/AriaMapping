@@ -3,9 +3,12 @@
 
 int main(int argc, char *argv[])
 {
+    Aria::init();
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-    
-    return a.exec();
+
+    int ret = a.exec();
+    Aria::exit();
+    return ret;
 }

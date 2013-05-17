@@ -15,7 +15,6 @@ Robot::Robot(const char * name, bool ignored,
 
 bool Robot::start()
 {
-    Aria::init();
     //parser->addDefaultArgument("-rh 192.168.1.11 -remoteLaserTcpPort 10002");
     parser->addDefaultArgument("");
 
@@ -63,7 +62,6 @@ bool Robot::shutdown()
     this->stop();
     this->stopRunning();
     this->waitForRunExit();
-    Aria::shutdown();
 
     return true;
 }
