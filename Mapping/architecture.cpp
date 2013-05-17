@@ -8,7 +8,6 @@ Architecture::Architecture() : QObject()
     mRobot = new Robot();
     mRobot->start();
 
-    thread = new QThread();
     wallFollowing = new WallFollowing(mRobot);
 }
 

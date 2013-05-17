@@ -45,9 +45,11 @@ void WallFollowing::finishWallFollowing()
 
 void WallFollowing::doWallFollowing()
 {
+    ArLog::log(ArLog::Normal,"Wall Following Thread Started");
 
     if((mRobot == NULL) || (!mRobot->isConnected()) || (!mRobot->sick.isConnected()))
     {
+        ArLog::log(ArLog::Normal,"Wall Following Thread Stoped: Something is not connected");
         return;
     }
 
@@ -55,9 +57,9 @@ void WallFollowing::doWallFollowing()
     double waitTime = 0.5, v = 300;
     int iteration = 0;
 
-    PIDCorrection *left = new PIDCorrection(&mRobot->sick,30,60,1000);
-    PIDCorrection *right = new PIDCorrection(&mRobot->sick,-30,-60,1000);
-    PIDCorrection *front = new PIDCorrection(&mRobot->sick,-30,30,1000);
+    PIDCorrection *left = new PIDCorrection(&mRobot->sick,30,60,300);
+    PIDCorrection *right = new PIDCorrection(&mRobot->sick,-30,-60,300);
+    PIDCorrection *front = new PIDCorrection(&mRobot->sick,-30,30,300);
 
     srand(time(NULL));
 
