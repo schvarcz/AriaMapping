@@ -90,7 +90,14 @@ int Robot::getLaserRange(int angle)
 }
 vector<ArSensorReading>* Robot::getLaserRanges()
 {
-    return this->lasers;
+    vector<ArSensorReading> *ret = new vector<ArSensorReading>();
+    sick.lockDevice();
+    for (int i =0;i<=180;i++)
+    {
+        ret->push_back(ArSensorReading(this->lasers->at(i)));
+    }
+    sick.unlockDevice();
+    return ret;
 }
 
 int Robot::getSonarRange(int id_sonar)
