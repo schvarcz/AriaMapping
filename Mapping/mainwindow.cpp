@@ -6,12 +6,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     this->connectActions();
 
-    architecture = new Architecture();
-    architecture->setMiniMapGraphicsView(ui->GVSensor);
 
-    connect(architecture->miniMap,SIGNAL(updateScene(QGraphicsScene*)),this,SLOT(updateGraphics(QGraphicsScene*)));
+    architecture.setMiniMapGraphicsView(ui->GVSensor);
+    architecture.setWorldMapGraphicsView(ui->GVMap);
+
 }
 
 MainWindow::~MainWindow()
@@ -22,11 +23,12 @@ MainWindow::~MainWindow()
 void MainWindow::connectActions()
 {
     connect(ui->pbStartStop,SIGNAL(clicked()),this,SLOT(startStopRobot()));
+    connect(&architecture,SIGNAL(updateMiniMapScene(QGraphicsScene*)),this,SLOT(updateMiniGraphics(QGraphicsScene*)));
+    connect(&architecture,SIGNAL(updateWorldMapScene(QGraphicsScene*)),this,SLOT(updateWorldGraphics(QGraphicsScene*)));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    delete architecture;
 }
 
 void MainWindow::startStopRobot()

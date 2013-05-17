@@ -4,9 +4,10 @@
 #include <QObject>
 #include <wallfollowing.h>
 #include <robot.h>
-#include <mapping.h>
+#include <minimapping.h>
 #include <QtCore>
 #include <QtGui>
+#include <mapping.h>
 
 class Architecture : public QObject
 {
@@ -22,7 +23,10 @@ public:
     void rotate(float degrees);
     void setMiniMapGraphicsView(QGraphicsView *view);
     QGraphicsScene* miniMapScene(){ return miniMap->mScene;}
-    Mapping *miniMap;
+    void setWorldMapGraphicsView(QGraphicsView *view);
+    QGraphicsScene* worldMapScene(){ return worldMap->mScene; }
+    MiniMapping *miniMap;
+    Mapping *worldMap;
 
 private:
     WallFollowing *wallFollowing;
@@ -32,6 +36,8 @@ private:
 public slots:
 
 signals:
+    void updateMiniMapScene(QGraphicsScene* newScene);
+    void updateWorldMapScene(QGraphicsScene* newScene);
 
 };
 

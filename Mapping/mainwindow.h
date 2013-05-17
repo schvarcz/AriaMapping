@@ -22,11 +22,12 @@ protected:
 private:
     void connectActions();
     Ui::MainWindow *ui;
-    Architecture *architecture;
+    Architecture architecture;
 
 private slots:
     void startStopRobot();
-    void updateGraphics(QGraphicsScene* newScene);
+    void updateMiniGraphics(QGraphicsScene* newScene);
+    void updateWorldGraphics(QGraphicsScene* newScene);
 
     void on_pbLeft_clicked();
     void on_pbRight_clicked();

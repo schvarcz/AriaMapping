@@ -3,8 +3,11 @@
 Architecture::Architecture() : QObject()
 {
     miniMap = NULL;
+    worldMap = NULL;
 
     mRobot = new Robot();
+    mRobot->start();
+
     thread = new QThread();
     wallFollowing = new WallFollowing(mRobot);
     mRobot->start();
@@ -35,8 +38,21 @@ void Architecture::setMiniMapGraphicsView(QGraphicsView *view)
         miniMap->stop();
     }
 
-    miniMap = new Mapping(mRobot,view);
+    miniMap = new MiniMapping(mRobot,view);
+    connect(miniMap,SIGNAL(updateScene(QGraphicsScene*)),this,SIGNAL(updateMiniMapScene(QGraphicsScene*)));
     miniMap->start();
+}
+
+void Architecture::setWorldMapGraphicsView(QGraphicsView *view)
+{
+    if(worldMap != NULL)
+    {
+        worldMap->stop();
+    }
+
+    worldMap = new Mapping(mRobot,view);
+    connect(worldMap,SIGNAL(updateScene(QGraphicsScene*)),this,SIGNAL(updateWorldMapScene(QGraphicsScene*)));
+    //worldMap->start();
 }
 
 void Architecture::forward(int distance)

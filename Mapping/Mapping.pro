@@ -18,6 +18,7 @@ SOURCES += main.cpp\
     pidcorrection.cpp \
     wallfollowing.cpp \
     architecture.cpp \
+    minimapping.cpp \
     mapping.cpp
 
 HEADERS  += mainwindow.h \
@@ -25,6 +26,7 @@ HEADERS  += mainwindow.h \
     pidcorrection.h \
     wallfollowing.h \
     architecture.h \
+    minimapping.h \
     mapping.h
 
 FORMS    += mainwindow.ui
