@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     wallfollowing.cpp \
     architecture.cpp \
     minimapping.cpp \
-    mapping.cpp
+    mapping.cpp \
+    cellmap.cpp
 
 HEADERS  += mainwindow.h \
     robot.h \
@@ -27,7 +28,8 @@ HEADERS  += mainwindow.h \
     wallfollowing.h \
     architecture.h \
     minimapping.h \
-    mapping.h
+    mapping.h \
+    cellmap.h
 
 FORMS    += mainwindow.ui
 
