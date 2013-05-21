@@ -16,6 +16,17 @@ public:
     float cellValue();
     void setCellValue(float value);
 
+    /* Apenas para facilitar uma transição entre um grid de floats e um grid de CellMap */
+    void operator =(float value);
+    float operator *(float value);
+    float operator *(int value);
+    bool operator <(float value);
+    bool operator >(float value);
+    bool operator !=(float value);
+    bool operator ==(float value);
+    bool operator <=(float value);
+    bool operator >=(float value);
+
 private:
     QGraphicsPolygonItem *poly = NULL;
     float value = 0.0;
