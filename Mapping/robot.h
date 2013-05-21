@@ -4,6 +4,7 @@
 #include <Aria.h>
 #include <vector>
 #include <QObject>
+#include <QThread>
 
 using namespace std;
 
@@ -36,8 +37,12 @@ private:
     ArLaserConnector *laserConnector;
     ArArgumentParser *parser;
     vector<ArSensorReading> *lasers = NULL;
+    QThread *thread;
+    bool run;
 
 public slots:
+    void keepReading();
+    void stopReading();
 
 signals:
 

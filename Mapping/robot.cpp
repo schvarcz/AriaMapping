@@ -11,6 +11,13 @@ Robot::Robot(const char * name, bool ignored,
     parser = new ArArgumentParser(&argc,&argv);
     robotConnector = new ArRobotConnector(parser,this);
     laserConnector = new ArLaserConnector(parser,this,robotConnector);
+
+    /*thread = new QThread();
+    connect(thread,SIGNAL(started()),this,SLOT(keepReading()));
+    connect(thread,SIGNAL(finished()),this,SLOT(stopReading()));
+    this->moveToThread(thread);
+    run = true;
+    thread->start();*/
 }
 
 bool Robot::start()
@@ -46,6 +53,8 @@ bool Robot::start()
     this->enableMotors();
     this->unlock();
     ArUtil::sleep(500);
+    //run = true;
+    //thread->start();
     ArLog::log(ArLog::Normal,"Robot Ok.");
 
     return true;
@@ -53,6 +62,7 @@ bool Robot::start()
 
 bool Robot::stop()
 {
+    run = false;
     ArRobot::stop();
    // this->disableMotors();
 }
@@ -132,3 +142,19 @@ void Robot::rotate(int degrees)
     this->unlock();
 }
 
+
+void Robot::keepReading()
+{
+    ArLog::log(ArLog::Normal,"Reading started");
+    while(run)
+    {
+        this->readingSensors();
+        ArUtil::sleep(33);
+    }
+    thread->exit();
+}
+
+void Robot::stopReading()
+{
+    ArLog::log(ArLog::Normal,"Reading stopped");
+}
