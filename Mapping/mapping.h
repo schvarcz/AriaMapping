@@ -7,8 +7,9 @@
 #include <iostream>
 #include <Aria.h>
 #include <qmath.h>
+#include <cellmap.h>
 
-#define MAP_LENGTH_WORLD 60
+#define MAP_LENGTH_WORLD 1000
 
 using namespace std;
 
@@ -25,14 +26,17 @@ private:
     void resetMap();
     void calculateMap();
     void render();
-    void drawBox(double xi,double yi,double xf,double yf, QBrush color);
+    void updateRoboPosition(float x,float y);
+    QGraphicsPolygonItem* drawBox(double xi,double yi,double xf,double yf, QBrush color);
     Robot *mRobot;
     QGraphicsView *mView;
     vector<ArSensorReading> *sensors = NULL;
     QThread *thread;
-    float map[MAP_LENGTH_WORLD][MAP_LENGTH_WORLD];
+    CellMap mapCell[MAP_LENGTH_WORLD][MAP_LENGTH_WORLD];
+    QGraphicsPolygonItem* roboPoly;
     bool run;
     double rangeMax, celRange;
+    float celWidth, celHeight, shiftX, shiftY;
 
 
 
