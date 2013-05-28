@@ -23,14 +23,14 @@ public:
     void rotate(float degrees);
     void setMiniMapGraphicsView(QGraphicsView *view);
     QGraphicsScene* miniMapScene(){ return miniMap->mScene;}
-    void setWorldMapGraphicsView(QGraphicsView *view);
-    QGraphicsScene* worldMapScene(){ return worldMap->mScene; }
-    MiniMapping *miniMap;
-    Mapping *worldMap;
+    void setWorldMapGraphicsView();
+    Mapping* worldMap(){ return this->mWorldMap; }
 
 private:
-    WallFollowing *wallFollowing;
-    Robot *mRobot;
+    Robot *mRobot = NULL;
+    Mapping *mWorldMap = NULL;
+    MiniMapping *miniMap = NULL;
+    WallFollowing *wallFollowing = NULL;
 
 public slots:
 

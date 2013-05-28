@@ -1,63 +1,58 @@
 #include "mapping.h"
 
-Mapping::Mapping(Robot *robot,QGraphicsView *view) :
+Mapping::Mapping(Robot *robot) :
     QObject()
 {
-  mRobot = robot;
-  mView = view;
-  mScene = new QGraphicsScene();
-  thread = new QThread();
+    mRobot = robot;
+    thread = new QThread();
 
-  mView->setScene(mScene);
-  this->moveToThread(thread);
-  rangeMax = 30000;
+    this->moveToThread(thread);
+    rangeMax = 30000;
 
-  celRange = 100000/MAP_LENGTH_WORLD;
+    celRange = 100000/MAP_LENGTH_WORLD;
 
-  celWidth = 1000.0/MAP_LENGTH_WORLD;
-  celHeight = 700.0/MAP_LENGTH_WORLD;
+    celWidth = 1000.0/MAP_LENGTH_WORLD;
+    celHeight = 700.0/MAP_LENGTH_WORLD;
 
 
-  shiftX = 1000.0/2;
-  shiftY = 700.0/2;
+    shiftX = 1000.0/2;
+    shiftY = 700.0/2;
 
-  connect(thread,SIGNAL(started()),this,SLOT(keepRendering()));
-  connect(thread,SIGNAL(finished()),this,SLOT(finishRendering()));
+    connect(thread,SIGNAL(started()),this,SLOT(keepRendering()));
+    connect(thread,SIGNAL(finished()),this,SLOT(finishRendering()));
 }
 
 void Mapping::start()
 {
-  run = true;
-  thread->start();
-  cout << "Startado o minimap" << endl;
+    run = true;
+    thread->start();
+    cout << "Startado o minimap" << endl;
 }
 
 void Mapping::stop()
 {
-  run = false;
+    run = false;
 }
 
 void Mapping::resetMap()
 {
-  cout << "Resetando o minimap" << endl;
-  for(int x =0; x<MAP_LENGTH_WORLD;x++)
-  {
-      for(int y=0; y<MAP_LENGTH_WORLD;y++)
-      {
-          mapCell[x][y] = 0.7;
-      }
-  }
-  mScene->clear();
+    cout << "Resetando o map" << endl;
+    for(int x =0; x<MAP_LENGTH_WORLD;x++)
+    {
+        for(int y=0; y<MAP_LENGTH_WORLD;y++)
+        {
+            mapCell[x][y] = 0.7;
+        }
+    }
 }
 
 void Mapping::calculateMap()
 {
-
   ArSensorReading ar = sensors->at(0);
   cout << "x: " << ar.getX() << " y: " << ar.getY() << endl;
   cout << "Taken x: " << ar.getXTaken() << " y: " << ar.getYTaken() << " th: " << ar.getThTaken() << endl;
   updateRoboPosition(ar.getXTaken()/celRange,ar.getYTaken()/celRange);
-  //cout << "Calculando o minimap" << endl;
+
   for(int x=0; x<MAP_LENGTH_WORLD;x++)
   {
       for(int y=0; y<MAP_LENGTH_WORLD;y++)
@@ -126,77 +121,125 @@ void Mapping::calculateMap()
 
 void Mapping::updateRoboPosition(float x, float y)
 {
+    /*
     QPolygonF box;
     box << QPointF(x+shiftX,y+shiftY)
         << QPointF(x+shiftX+celWidth*5,y+shiftY)
         << QPointF(x+shiftX+celWidth*5,y+celHeight*5+shiftY)
         << QPointF(x+shiftX,y+celHeight*5+shiftY);
-    roboPoly->setPolygon(box);
+    roboPoly->setPolygon(box);*/
 }
 void Mapping::render()
 {
 
-  //cout << "Rendering o minimap" << endl;
+    cout << "Rendering o map" << endl;
 
-  mScene = new QGraphicsScene();
+    glBegin(GL_POINTS);
 
-  //cout << "\n\n\n\n" << "Printando visão do sensor: " << endl;
-  for(int y=0; y<MAP_LENGTH_WORLD;y++)
-  {
-      for(int x=0; x<MAP_LENGTH_WORLD;x++)
-      {
-          //cout << map[x][MAP_LENGTH-1-y] << " ";
+    //  //cout << "\n\n\n\n" << "Printando visão do sensor: " << endl;
+    for(int y=0; y<MAP_LENGTH_WORLD;y++)
+    {
+        for(int x=0; x<MAP_LENGTH_WORLD;x++)
+        {
+            //cout << map[x][MAP_LENGTH-1-y] << " ";
+            if(mapCell[x][y] < 1.0)
+            {
+                //int value = mapCell[x][y]*255;
+                drawBox(
+                            x*celWidth,
+                            y*celHeight,
+                            celWidth,
+                            celHeight
+                            );
+            }
+        }
+        //cout << endl;
+    }
+    glEnd();
 
-          if(mapCell[x][y] < 1.0)
-          {
-              int value = mapCell[x][y]*255;
-              mapCell[x][y].setPolygonCell(
-                          drawBox(
-                              x*celWidth,
-                              y*celHeight,
-                              celWidth,
-                              celHeight,
-                              QBrush(QColor(value,value,value))
-                              )
-                          );
-          }
-      }
-      //cout << endl;
-  }
-  roboPoly = drawBox(
-              MAP_LENGTH_WORLD*celWidth/2,
-              MAP_LENGTH_WORLD*celHeight/2,
-              celWidth,
-              celHeight,
-              QBrush(QColor(255,0,0))
-              );
-  emit updateScene(mScene);
+    glColor3f(1.0f,0.0f,0.0f);
+    glBegin(GL_QUADS);
+
+
+    glVertex2i(-10,5);
+    glVertex2i(10,5);
+    glVertex2i(10,-5);
+    glVertex2i(-10,-5);
+
+    glVertex2i(-5,12);
+    glVertex2i(5,12);
+    glVertex2i(5,-12);
+    glVertex2i(-5,-12);
+
+    glEnd();
+
+    glBegin(GL_TRIANGLES);
+
+    glVertex2i(-5,-12);
+    glVertex2i(-5,-5);
+    glVertex2i(-10,-5);
+
+    glVertex2i(5,12);
+    glVertex2i(5,5);
+    glVertex2i(10,5);
+
+    glVertex2i(-5,12);
+    glVertex2i(-5,5);
+    glVertex2i(-10,5);
+
+
+    glVertex2i(5,-12);
+    glVertex2i(5,-5);
+    glVertex2i(10,-5);
+
+    glEnd();
+
+    glColor3f(0.0f,0.0f,0.0f);
+    glBegin(GL_QUADS);
+
+
+    glVertex2i(-5,-12);
+    glVertex2i(5,-12);
+    glVertex2i(5,0);
+    glVertex2i(-5,0);
+
+    glColor3f(0.0f,0.0f,1.0f);
+    glVertex2i(-5,10);
+    glVertex2i(5,10);
+    glVertex2i(5,5);
+    glVertex2i(-5,5);
+
+    glEnd();
 }
 
-QGraphicsPolygonItem* Mapping::drawBox(double x, double y, double width, double height, QBrush color)
+void Mapping::drawBox(double x, double y, double width, double height)
 {
-  QPolygonF box;
-  box << QPointF(x,y) << QPointF(x+width,y) << QPointF(x+width,y+height) << QPointF(x,y+height);
-  return mScene->addPolygon(box,QPen(Qt::NoPen),color);
+    //glColor3f(color.redF()/255.0f,color.greenF()/255.0f,color.blueF()/255.0f);
+    glColor3f(1.0,1.0,0.0);
+
+    glVertex2f(x,y);
+    glVertex2f(x,y);
+    glVertex2f(x+width,y);
+    glVertex2f(x+width,y+height);
+    glVertex2f(x,y+height);
 }
 
 void Mapping::keepRendering()
 {
-  resetMap();
-  render();
-  while(run)
-  {
-      if(sensors != NULL)
-      {
-          sensors->clear();
-          delete sensors;
-      }
-      mRobot->readingSensors();
-      sensors = mRobot->getLaserRanges();
-      calculateMap();
-      ArUtil::sleep(33);
-  }
-  thread->exit();
+    resetMap();
+    while(run)
+    {
+        if(sensors != NULL)
+        {
+            sensors->clear();
+            delete sensors;
+        }
+        mRobot->readingSensors();
+        sensors = mRobot->getLaserRanges();
+        calculateMap();
+        ArUtil::sleep(33);
+    }
+    thread->exit();
 }
 
 void Mapping::finishRendering()

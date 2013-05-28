@@ -8,8 +8,10 @@
 #include <Aria.h>
 #include <qmath.h>
 #include <cellmap.h>
+#include <QtOpenGL/QGLWidget>
+#include <QtOpenGL/QGLFormat>
 
-#define MAP_LENGTH_WORLD 1000
+#define MAP_LENGTH_WORLD 500
 
 using namespace std;
 
@@ -17,19 +19,17 @@ class Mapping : public QObject
 {
     Q_OBJECT
 public:
-    explicit Mapping(Robot *robot,QGraphicsView *view);
+    explicit Mapping(Robot *robot);
     void start();
     void stop();
-    QGraphicsScene *mScene;
+    void render();
 
 private:
     void resetMap();
     void calculateMap();
-    void render();
     void updateRoboPosition(float x,float y);
-    QGraphicsPolygonItem* drawBox(double xi,double yi,double xf,double yf, QBrush color);
+    void drawBox(double xi,double yi,double xf,double yf);
     Robot *mRobot;
-    QGraphicsView *mView;
     vector<ArSensorReading> *sensors = NULL;
     QThread *thread;
     CellMap mapCell[MAP_LENGTH_WORLD][MAP_LENGTH_WORLD];
@@ -45,7 +45,7 @@ public slots:
     void finishRendering();
 
 signals:
-    void updateScene(QGraphicsScene* newScene);
+    void updateScreen();
 
 };
 

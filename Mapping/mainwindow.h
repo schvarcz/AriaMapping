@@ -3,6 +3,11 @@
 
 #include <QMainWindow>
 #include <architecture.h>
+#include <glwidget.h>
+#include <iostream>
+
+
+using namespace std;
 
 namespace Ui {
 class MainWindow;
@@ -18,14 +23,17 @@ public:
     
 protected:
     void closeEvent(QCloseEvent *event);
+    void resizeEvent(QResizeEvent *event);
+    void showEvent(QShowEvent *event);
 
 private:
     void connectActions();
     Ui::MainWindow *ui;
     Architecture architecture;
+    GLWidget *gl;
+    QToolButton *playButton;
 
 private slots:
-    void startStopRobot();
     void updateMiniGraphics(QGraphicsScene* newScene);
     void updateWorldGraphics(QGraphicsScene* newScene);
 
@@ -33,6 +41,8 @@ private slots:
     void on_pbRight_clicked();
     void on_pbDown_clicked();
     void on_pbUp_clicked();
+
+    void on_playbutton_clicked();
 };
 
 #endif // MAINWINDOW_H

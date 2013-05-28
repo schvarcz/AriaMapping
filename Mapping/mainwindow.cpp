@@ -9,9 +9,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->connectActions();
 
+    playButton = new QToolButton();
+    playButton->setIcon(QIcon("icons/Play-1-Hot-icon.png"));
+    playButton->setCheckable(true);
+    ui->mainToolBar->addWidget(playButton);
+    connect(playButton,SIGNAL(clicked()),this,SLOT(on_playbutton_clicked()));
+
+    gl = new GLWidget(ui->GVMap);
+    ui->GVMap->setViewport(gl);
 
     architecture.setMiniMapGraphicsView(ui->GVSensor);
-    architecture.setWorldMapGraphicsView(ui->GVMap);
+    //architecture.setWorldMapGraphicsView(ui->GVMap);
+    architecture.setWorldMapGraphicsView();
+    gl->setMapping(architecture.worldMap());
 
 }
 
@@ -22,7 +32,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::connectActions()
 {
-    connect(ui->pbStartStop,SIGNAL(clicked()),this,SLOT(startStopRobot()));
     connect(&architecture,SIGNAL(updateMiniMapScene(QGraphicsScene*)),this,SLOT(updateMiniGraphics(QGraphicsScene*)));
     connect(&architecture,SIGNAL(updateWorldMapScene(QGraphicsScene*)),this,SLOT(updateWorldGraphics(QGraphicsScene*)));
 }
@@ -31,19 +40,18 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
 }
 
-void MainWindow::startStopRobot()
+void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    if(ui->pbStartStop->isChecked())
-    {
-        ui->pbStartStop->setText("Stop Robot");
-        architecture.startWallFollowing();
-    }
-    else
-    {
-        ui->pbStartStop->setText("Start Robot");
-        architecture.stopWallFollowing();
-    }
+    QMainWindow::resizeEvent(event);
+    gl->resize(ui->GVMap->width(),ui->GVMap->height());
 }
+
+void MainWindow::showEvent(QShowEvent *event)
+{
+    QMainWindow::showEvent(event);
+    gl->resize(ui->GVMap->width(),ui->GVMap->height());
+}
+
 
 void MainWindow::updateMiniGraphics(QGraphicsScene* newScene)
 {
@@ -79,5 +87,19 @@ void MainWindow::on_pbLeft_clicked()
 void MainWindow::on_pbRight_clicked()
 {
     architecture.rotate(-10);
+}
+
+void MainWindow::on_playbutton_clicked()
+{
+    if(playButton->isChecked())
+    {
+        playButton->setIcon(QIcon("icons/Pause-Normal-Red-icon.png"));
+        architecture.startWallFollowing();
+    }
+    else
+    {
+        playButton->setIcon(QIcon("icons/Play-1-Hot-icon.png"));
+        architecture.stopWallFollowing();
+    }
 }
 

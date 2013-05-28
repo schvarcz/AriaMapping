@@ -20,7 +20,9 @@ SOURCES += main.cpp\
     architecture.cpp \
     minimapping.cpp \
     mapping.cpp \
-    cellmap.cpp
+    cellmap.cpp \
+    glwidget.cpp \
+    glthread.cpp
 
 HEADERS  += mainwindow.h \
     robot.h \
@@ -29,7 +31,9 @@ HEADERS  += mainwindow.h \
     architecture.h \
     minimapping.h \
     mapping.h \
-    cellmap.h
+    cellmap.h \
+    glthread.h \
+    glwidget.h
 
 FORMS    += mainwindow.ui
 
@@ -40,3 +44,4 @@ LIBS += -L/usr/local/Aria/lib \
 
 RESOURCES += \
     Icons.qrc
+
