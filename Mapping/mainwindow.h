@@ -31,7 +31,7 @@ private:
     Ui::MainWindow *ui;
     Architecture architecture;
     GLWidget *gl;
-    QToolButton *playButton;
+    QToolButton *up, *down, *left, *right, *playButton;
 
 private slots:
     void updateMiniGraphics(QGraphicsScene* newScene);

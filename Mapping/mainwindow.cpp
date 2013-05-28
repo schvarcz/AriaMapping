@@ -9,17 +9,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->connectActions();
 
-    playButton = new QToolButton();
-    playButton->setIcon(QIcon("icons/Play-1-Hot-icon.png"));
-    playButton->setCheckable(true);
-    ui->mainToolBar->addWidget(playButton);
-    connect(playButton,SIGNAL(clicked()),this,SLOT(on_playbutton_clicked()));
+
 
     gl = new GLWidget(ui->GVMap);
     ui->GVMap->setViewport(gl);
 
     architecture.setMiniMapGraphicsView(ui->GVSensor);
-    //architecture.setWorldMapGraphicsView(ui->GVMap);
     architecture.setWorldMapGraphicsView();
     gl->setMapping(architecture.worldMap());
 
@@ -34,6 +29,37 @@ void MainWindow::connectActions()
 {
     connect(&architecture,SIGNAL(updateMiniMapScene(QGraphicsScene*)),this,SLOT(updateMiniGraphics(QGraphicsScene*)));
     connect(&architecture,SIGNAL(updateWorldMapScene(QGraphicsScene*)),this,SLOT(updateWorldGraphics(QGraphicsScene*)));
+
+    connect(ui->actionUp,SIGNAL(triggered()),this,SLOT(on_pbUp_clicked()));
+    connect(ui->actionDown,SIGNAL(triggered()),this,SLOT(on_pbDown_clicked()));
+    connect(ui->actionLeft,SIGNAL(triggered()),this,SLOT(on_pbLeft_clicked()));
+    connect(ui->actionRight,SIGNAL(triggered()),this,SLOT(on_pbRight_clicked()));
+
+    playButton = new QToolButton();
+    playButton->setIcon(QIcon("icons/Play-1-Hot-icon.png"));
+    playButton->setCheckable(true);
+    ui->mainToolBar->addWidget(playButton);
+    connect(playButton,SIGNAL(clicked()),this,SLOT(on_playbutton_clicked()));
+
+    up = new QToolButton();
+    up->setIcon(QIcon("icons/arrow-up-icon.png"));
+    ui->mainToolBar->addWidget(up);
+    connect(up,SIGNAL(clicked()),this,SLOT(on_pbUp_clicked()));
+
+    down = new QToolButton();
+    down->setIcon(QIcon("icons/arrow-down-icon.png"));
+    ui->mainToolBar->addWidget(down);
+    connect(down,SIGNAL(clicked()),this,SLOT(on_pbDown_clicked()));
+
+    left = new QToolButton();
+    left->setIcon(QIcon("icons/arrow-left-icon.png"));
+    ui->mainToolBar->addWidget(left);
+    connect(left,SIGNAL(clicked()),this,SLOT(on_pbLeft_clicked()));
+
+    right = new QToolButton();
+    right->setIcon(QIcon("icons/arrow-right-icon.png"));
+    ui->mainToolBar->addWidget(right);
+    connect(right,SIGNAL(clicked()),this,SLOT(on_pbRight_clicked()));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -57,6 +83,7 @@ void MainWindow::updateMiniGraphics(QGraphicsScene* newScene)
 {
     QGraphicsScene* oldScene = ui->GVSensor->scene();
     ui->GVSensor->setScene(newScene);
+    ui->GVSensor->fitInView(0,0,newScene->width(),newScene->height());
     oldScene->clear();
     delete oldScene;
 }
