@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -34,4 +34,7 @@ FORMS    += mainwindow.ui
 INCLUDEPATH += /usr/local/Aria/include
 
 LIBS += -L/usr/local/Aria/lib \
--lAria -lArNetworking
+-lAria -lArNetworking -lX11
+
+RESOURCES += \
+    Icons.qrc

@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/home/schvarcz/Dropbox/UFRGS - Mestrado/Introdução a Robótica/Trabalhos/Mapping/Mapping">
+        <file>icons/Play-1-Hot-icon.png</file>
+        <file>icons/Pause-Normal-Red-icon.png</file>
+        <file>icons/arrow-up-icon.png</file>
+        <file>icons/arrow-right-icon.png</file>
+        <file>icons/arrow-left-icon.png</file>
+        <file>icons/arrow-down-icon.png</file>
+    </qresource>
+</RCC>
