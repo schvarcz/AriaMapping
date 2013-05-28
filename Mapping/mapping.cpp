@@ -9,7 +9,7 @@ Mapping::Mapping(Robot *robot) :
     this->moveToThread(thread);
     rangeMax = 30000;
 
-    celRange = 100000/MAP_LENGTH_WORLD;
+    celRange = 10000/MAP_LENGTH_WORLD;
 
     celWidth = 1000.0/MAP_LENGTH_WORLD;
     celHeight = 700.0/MAP_LENGTH_WORLD;
@@ -49,13 +49,15 @@ void Mapping::resetMap()
 void Mapping::calculateMap()
 {
   ArSensorReading ar = sensors->at(0);
-  cout << "x: " << ar.getX() << " y: " << ar.getY() << endl;
-  cout << "Taken x: " << ar.getXTaken() << " y: " << ar.getYTaken() << " th: " << ar.getThTaken() << endl;
-  updateRoboPosition(ar.getXTaken()/celRange,ar.getYTaken()/celRange);
+  //cout << "x: " << ar.getX() << " y: " << ar.getY() << endl;
+  //cout << "Taken x: " << ar.getXTaken() << " y: " << ar.getYTaken() << " th: " << ar.getThTaken() << endl;
+  int x = floor(ar.getXTaken()/celRange),
+          y = floor(ar.getYTaken()/celRange);
+  updateRoboPosition(ar.getXTaken(),ar.getYTaken(),ar.getThTaken());
 
-  for(int x=0; x<MAP_LENGTH_WORLD;x++)
+  for(int x=max(0,x-40); x<min(MAP_LENGTH_WORLD,x+40);x++)
   {
-      for(int y=0; y<MAP_LENGTH_WORLD;y++)
+      for(int y=max(0,y-40); y<min(MAP_LENGTH_WORLD,y+40);y++)
       {
           int angle = round(atan2(
                                 ar.getYTaken()-y*celRange,
@@ -108,33 +110,23 @@ void Mapping::calculateMap()
       }
   }
 
-  /*
-  float celWidth = 1000.0/MAP_LENGTH_WORLD;
-  float celHeight = 700.0/MAP_LENGTH_WORLD;
-  QRect ret(QPoint(celWidth*MAP_LENGTH_WORLD/2,celHeight*MAP_LENGTH_WORLD/2),QPoint(celWidth*MAP_LENGTH_WORLD,celHeight*MAP_LENGTH_WORLD));
-  QList<QGraphicsView*> views = mScene->views();
-  for(int i=0;i<views.size();i++)
-  {
-      views.at(i)->viewport()->update(ret);
-  }*/
+  //emit updateScreen();
 }
 
-void Mapping::updateRoboPosition(float x, float y)
+void Mapping::updateRoboPosition(float x, float y, float th)
 {
-    /*
-    QPolygonF box;
-    box << QPointF(x+shiftX,y+shiftY)
-        << QPointF(x+shiftX+celWidth*5,y+shiftY)
-        << QPointF(x+shiftX+celWidth*5,y+celHeight*5+shiftY)
-        << QPointF(x+shiftX,y+celHeight*5+shiftY);
-    roboPoly->setPolygon(box);*/
+
+    cout << "X: " << x << "  Y: " << y << endl;
+    xRobo = x;
+    yRobo = y;
+    thRobo = th;
 }
 void Mapping::render()
 {
 
     cout << "Rendering o map" << endl;
 
-    glBegin(GL_POINTS);
+    glBegin(GL_QUADS);
 
     //  //cout << "\n\n\n\n" << "Printando visão do sensor: " << endl;
     for(int y=0; y<MAP_LENGTH_WORLD;y++)
@@ -146,10 +138,10 @@ void Mapping::render()
             {
                 //int value = mapCell[x][y]*255;
                 drawBox(
-                            x*celWidth,
-                            y*celHeight,
-                            celWidth,
-                            celHeight
+                            (x-MAP_LENGTH_WORLD/2)*celRange-1,
+                            (y-MAP_LENGTH_WORLD/2)*celRange-1,
+                            celRange,
+                            celRange
                             );
             }
         }
@@ -157,40 +149,42 @@ void Mapping::render()
     }
     glEnd();
 
+    glTranslated(xRobo,yRobo,0.0);
+    glRotated(thRobo,0.0,0.0,1.0);
     glColor3f(1.0f,0.0f,0.0f);
     glBegin(GL_QUADS);
 
+    int fator = 20;
+    glVertex2i(-10*fator,5*fator);
+    glVertex2i(10*fator,5*fator);
+    glVertex2i(10*fator,-5*fator);
+    glVertex2i(-10*fator,-5*fator);
 
-    glVertex2i(-10,5);
-    glVertex2i(10,5);
-    glVertex2i(10,-5);
-    glVertex2i(-10,-5);
-
-    glVertex2i(-5,12);
-    glVertex2i(5,12);
-    glVertex2i(5,-12);
-    glVertex2i(-5,-12);
+    glVertex2i(-5*fator,12*fator);
+    glVertex2i(5*fator,12*fator);
+    glVertex2i(5*fator,-12*fator);
+    glVertex2i(-5*fator,-12*fator);
 
     glEnd();
 
     glBegin(GL_TRIANGLES);
 
-    glVertex2i(-5,-12);
-    glVertex2i(-5,-5);
-    glVertex2i(-10,-5);
+    glVertex2i(-5*fator,-12*fator);
+    glVertex2i(-5*fator,-5*fator);
+    glVertex2i(-10*fator,-5*fator);
 
-    glVertex2i(5,12);
-    glVertex2i(5,5);
-    glVertex2i(10,5);
+    glVertex2i(5*fator,12*fator);
+    glVertex2i(5*fator,5*fator);
+    glVertex2i(10*fator,5*fator);
 
-    glVertex2i(-5,12);
-    glVertex2i(-5,5);
-    glVertex2i(-10,5);
+    glVertex2i(-5*fator,12*fator);
+    glVertex2i(-5*fator,5*fator);
+    glVertex2i(-10*fator,5*fator);
 
 
-    glVertex2i(5,-12);
-    glVertex2i(5,-5);
-    glVertex2i(10,-5);
+    glVertex2i(5*fator,-12*fator);
+    glVertex2i(5*fator,-5*fator);
+    glVertex2i(10*fator,-5*fator);
 
     glEnd();
 
@@ -198,16 +192,16 @@ void Mapping::render()
     glBegin(GL_QUADS);
 
 
-    glVertex2i(-5,-12);
-    glVertex2i(5,-12);
-    glVertex2i(5,0);
-    glVertex2i(-5,0);
+    glVertex2i(-5*fator,-12*fator);
+    glVertex2i(5*fator,-12*fator);
+    glVertex2i(5*fator,0*fator);
+    glVertex2i(-5*fator,0*fator);
 
     glColor3f(0.0f,0.0f,1.0f);
-    glVertex2i(-5,10);
-    glVertex2i(5,10);
-    glVertex2i(5,5);
-    glVertex2i(-5,5);
+    glVertex2i(-5*fator,10*fator);
+    glVertex2i(5*fator,10*fator);
+    glVertex2i(5*fator,5*fator);
+    glVertex2i(-5*fator,5*fator);
 
     glEnd();
 }
@@ -217,7 +211,6 @@ void Mapping::drawBox(double x, double y, double width, double height)
     //glColor3f(color.redF()/255.0f,color.greenF()/255.0f,color.blueF()/255.0f);
     glColor3f(1.0,1.0,0.0);
 
-    glVertex2f(x,y);
     glVertex2f(x,y);
     glVertex2f(x+width,y);
     glVertex2f(x+width,y+height);

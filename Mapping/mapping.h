@@ -27,7 +27,7 @@ public:
 private:
     void resetMap();
     void calculateMap();
-    void updateRoboPosition(float x,float y);
+    void updateRoboPosition(float x,float y,float th);
     void drawBox(double xi,double yi,double xf,double yf);
     Robot *mRobot;
     vector<ArSensorReading> *sensors = NULL;
@@ -37,6 +37,7 @@ private:
     bool run;
     double rangeMax, celRange;
     float celWidth, celHeight, shiftX, shiftY;
+    float xRobo,yRobo, thRobo;
 
 
 

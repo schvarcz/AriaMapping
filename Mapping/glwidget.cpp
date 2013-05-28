@@ -86,7 +86,7 @@ void GLWidget::resizeGL(int w, int h)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    int size = 500;
+    int size = 10000;
     glOrtho(-size, size, -size, size,-1,1);
     if(!mGLThread.isRunning())
         updateGL();
