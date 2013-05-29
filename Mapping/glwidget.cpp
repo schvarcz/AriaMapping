@@ -24,6 +24,11 @@ void GLWidget::stopRendering()
     mGLThread.wait();
 }
 
+bool GLWidget::isRendering()
+{
+    return mGLThread.isRunning();
+}
+
 QSize GLWidget::minimumSize() const
 {
     return QSize(400,400);
@@ -97,12 +102,16 @@ void GLWidget::resizeEvent(QResizeEvent *event)
     qDebug() << "Resizing Event";
     QGLWidget::resizeEvent(event);
     //mGLThread.resizeViewport(event->size());
-    this->resizeGL(event->size().width(),event->size().height());
+    //this->resizeGL(event->size().width(),event->size().height());
 }
 
 void GLWidget::paintEvent(QPaintEvent *event)
 {
     //Done by GLThread
+    if(!this->isRendering())
+    {
+        startRendering();
+    }
 }
 
 void GLWidget::closeEvent(QCloseEvent *event)
@@ -116,13 +125,13 @@ void GLWidget::resize(int w, int h)
     qDebug() << "Resizing";
     mGLThread.resizeViewport(QSize(w,h));
     QGLWidget::resize(w,h);
-    this->resizeGL(w,h);
+    //this->resizeGL(w,h);
 }
 
 void GLWidget::setMapping(Mapping *mapping)
 {
     mMapping = mapping;
-    connect(mMapping,SIGNAL(updateScreen()),this,SLOT(updateScreen()));
+    //connect(mMapping,SIGNAL(updateScreen()),this,SLOT(updateScreen()));
 }
 
 Mapping* GLWidget::mapping()

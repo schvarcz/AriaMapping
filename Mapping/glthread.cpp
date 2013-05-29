@@ -25,9 +25,15 @@ void GLThread::run()
 
     while(doRendering)
     {
+        cout << "Rendering" << endl;
         mGLWidget->makeCurrent();
-        mGLWidget->swapBuffers();
+        if(doResize)
+        {
+            doResize = false;
+            mGLWidget->resizeGL(mSize.width(),mSize.height());
+        }
+        mGLWidget->updateGL();
         mGLWidget->doneCurrent();
-        msleep(66);
+        msleep(33);
     }
 }

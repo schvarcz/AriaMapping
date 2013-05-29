@@ -44,9 +44,6 @@ public slots:
     void keepRendering();
     void finishRendering();
 
-signals:
-    void updateScreen();
-
 };
 
 #endif // MAPPING_H

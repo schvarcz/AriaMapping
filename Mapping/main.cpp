@@ -1,10 +1,10 @@
 #include <QApplication>
 #include "mainwindow.h"
-//#include <X11/Xlib.h>
+#include <X11/Xlib.h>
 
 int main(int argc, char *argv[])
 {
-    //XInitThreads();
+    XInitThreads();
     Aria::init();
     QApplication a(argc, argv);
     MainWindow w;

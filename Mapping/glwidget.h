@@ -23,13 +23,14 @@ public:
     void resize(int w, int h);
     void startRendering();
     void stopRendering();
+    bool isRendering();
     void setMapping(Mapping *mapping);
     Mapping* mapping();
+    void resizeGL(int w, int h);
 
 protected:
     void initializeGL();
     void paintGL();
-    void resizeGL(int w, int h);
     void resizeEvent(QResizeEvent *event);
     void closeEvent(QCloseEvent *event);
     void paintEvent(QPaintEvent *event);
