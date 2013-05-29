@@ -7,16 +7,9 @@ Mapping::Mapping(Robot *robot) :
     thread = new QThread();
 
     this->moveToThread(thread);
-    rangeMax = 30000;
+    rangeMax = 3000;
 
     celRange = 10000/MAP_LENGTH_WORLD;
-
-    celWidth = 1000.0/MAP_LENGTH_WORLD;
-    celHeight = 700.0/MAP_LENGTH_WORLD;
-
-
-    shiftX = 1000.0/2;
-    shiftY = 700.0/2;
 
     connect(thread,SIGNAL(started()),this,SLOT(keepRendering()));
     connect(thread,SIGNAL(finished()),this,SLOT(finishRendering()));
@@ -24,19 +17,20 @@ Mapping::Mapping(Robot *robot) :
 
 void Mapping::start()
 {
+    qDebug() << "Start mapping" << endl;
     run = true;
     thread->start();
-    cout << "Startado o minimap" << endl;
 }
 
 void Mapping::stop()
 {
+    qDebug() << "Stop mapping" << endl;
     run = false;
 }
 
 void Mapping::resetMap()
 {
-    cout << "Resetando o map" << endl;
+    qDebug() << "Resetando o mapping" << endl;
     for(int x =0; x<MAP_LENGTH_WORLD;x++)
     {
         for(int y=0; y<MAP_LENGTH_WORLD;y++)
@@ -48,48 +42,45 @@ void Mapping::resetMap()
 
 void Mapping::calculateMap()
 {
-  ArSensorReading ar = sensors->at(0);
-  //cout << "x: " << ar.getX() << " y: " << ar.getY() << endl;
-  //cout << "Taken x: " << ar.getXTaken() << " y: " << ar.getYTaken() << " th: " << ar.getThTaken() << endl;
-  int x = floor(ar.getXTaken()/celRange),
-          y = floor(ar.getYTaken()/celRange);
+  ArSensorReading ar = sensors->at(0); //Apenas para pegar as informações de posição do robo no momento da tomada de informações.
+
   updateRoboPosition(ar.getXTaken(),ar.getYTaken(),ar.getThTaken());
 
+  cout << "Calculando o mapa" << endl;
   for(int x=max(0,x-40); x<min(MAP_LENGTH_WORLD,x+40);x++)
   {
       for(int y=max(0,y-40); y<min(MAP_LENGTH_WORLD,y+40);y++)
       {
           int angle = round(atan2(
-                                ar.getYTaken()-y*celRange,
-                                x*celRange-ar.getXTaken()
-                                )*180/M_PI);
+                                ((float)y - 0.5 - MAP_LENGTH_WORLD/2)*celRange-yRobo,
+                                ((float)x - 0.5 - MAP_LENGTH_WORLD/2)*celRange-xRobo
+                                )*180/M_PI)-90+thRobo;
           float distance = sqrt(
                                    pow(
-                                       x*celRange-ar.getXTaken(),
+                                       x*celRange-xRobo,
                                        2
                                        )
                                    +pow(
-                                       y*celRange-ar.getYTaken(),
+                                       y*celRange-yRobo,
                                        2
                                        )
                                    );
           if ((angle>0) && (angle<=180))
           {
-              //cout << "reading " << 180-angle << "/" << sensors.size() << endl;
               float reading = (float)sensors->at(180-angle).getRange();
-              ArSensorReading ar = sensors->at(180-angle);
-              cout << "x: " << ar.getX() << " y: " << ar.getY() << endl;
-              cout << "Taken x: " << ar.getXTaken() << " y: " << ar.getYTaken() << " th: " << ar.getThTaken() << endl;
-              //cout << "read" << endl;
+              //ArSensorReading ar = sensors->at(180-angle);
+
+              //cout << "x: " << ar.getX() << " y: " << ar.getY() << endl;
+              //cout << "Taken x: " << ar.getXTaken() << " y: " << ar.getYTaken() << " th: " << ar.getThTaken() << endl;
 
               //cout << x << " " << y << " " << angle << " " << distance << " " << reading << " " << celRange << endl;
 
-              float variacao = celRange/2;
+              float variacao = celRange;
 
               if(reading + variacao <= distance)
               {
                   //cout << "Área desconhecida... " << endl;
-                  mapCell[x][y] = 0.7;
+                  //mapCell[x][y] = 0.7;
               }
               else if(reading-variacao > distance)
               {
@@ -105,7 +96,7 @@ void Mapping::calculateMap()
           }
           else
           {
-              mapCell[x][y] = 0.7;
+              //mapCell[x][y] = 0.7;
           }
       }
   }
@@ -115,8 +106,7 @@ void Mapping::calculateMap()
 
 void Mapping::updateRoboPosition(float x, float y, float th)
 {
-
-    cout << "X: " << x << "  Y: " << y << endl;
+    //cout << "X: " << x << "  Y: " << y << endl;
     xRobo = x;
     yRobo = y;
     thRobo = th;
@@ -134,14 +124,15 @@ void Mapping::render()
         for(int x=0; x<MAP_LENGTH_WORLD;x++)
         {
             //cout << map[x][MAP_LENGTH-1-y] << " ";
-            if(mapCell[x][y] < 1.0)
+            if(mapCell[x][y] != 0.7)
             {
-                //int value = mapCell[x][y]*255;
+                int value = mapCell[x][y].cellValue();
                 drawBox(
                             (x-MAP_LENGTH_WORLD/2)*celRange-1,
                             (y-MAP_LENGTH_WORLD/2)*celRange-1,
                             celRange,
-                            celRange
+                            celRange,
+                            QColor(value,value,value)
                             );
             }
         }
@@ -149,9 +140,28 @@ void Mapping::render()
     }
     glEnd();
 
+    drawRobot();
+}
+
+void Mapping::drawBox(double x, double y, double width, double height,QColor color)
+{
+    //glColor3f(color.redF()/255.0f,color.greenF()/255.0f,color.blueF()/255.0f);
+    glColor3f(color.redF(),color.greenF(),color.blueF());
+    //glColor3f(1.0,1.0,0.0);
+
+    glVertex2f(x,y);
+    glVertex2f(x+width,y);
+    glVertex2f(x+width,y+height);
+    glVertex2f(x,y+height);
+}
+
+void Mapping::drawRobot()
+{
     glTranslated(xRobo,yRobo,0.0);
-    glRotated(thRobo,0.0,0.0,1.0);
+    glRotated(thRobo-90,0.0,0.0,1.0);
+
     glColor3f(1.0f,0.0f,0.0f);
+
     glBegin(GL_QUADS);
 
     int fator = 20;
@@ -206,16 +216,6 @@ void Mapping::render()
     glEnd();
 }
 
-void Mapping::drawBox(double x, double y, double width, double height)
-{
-    //glColor3f(color.redF()/255.0f,color.greenF()/255.0f,color.blueF()/255.0f);
-    glColor3f(1.0,1.0,0.0);
-
-    glVertex2f(x,y);
-    glVertex2f(x+width,y);
-    glVertex2f(x+width,y+height);
-    glVertex2f(x,y+height);
-}
 
 void Mapping::keepRendering()
 {

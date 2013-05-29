@@ -28,15 +28,14 @@ private:
     void resetMap();
     void calculateMap();
     void updateRoboPosition(float x,float y,float th);
-    void drawBox(double xi,double yi,double xf,double yf);
+    void drawBox(double xi,double yi,double xf,double yf,QColor color);
+    void drawRobot();
     Robot *mRobot;
     vector<ArSensorReading> *sensors = NULL;
     QThread *thread;
     CellMap mapCell[MAP_LENGTH_WORLD][MAP_LENGTH_WORLD];
-    QGraphicsPolygonItem* roboPoly;
     bool run;
     double rangeMax, celRange;
-    float celWidth, celHeight, shiftX, shiftY;
     float xRobo,yRobo, thRobo;
 
 
