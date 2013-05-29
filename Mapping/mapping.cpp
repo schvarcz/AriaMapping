@@ -233,6 +233,7 @@ void Mapping::keepRendering()
         ArUtil::sleep(33);
     }
     thread->exit();
+    thread->wait();
 }
 
 void Mapping::finishRendering()

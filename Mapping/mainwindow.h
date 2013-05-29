@@ -37,12 +37,11 @@ private slots:
     void updateMiniGraphics(QGraphicsScene* newScene);
     void updateWorldGraphics(QGraphicsScene* newScene);
 
-    void on_pbLeft_clicked();
-    void on_pbRight_clicked();
-    void on_pbDown_clicked();
-    void on_pbUp_clicked();
-
-    void on_playbutton_clicked();
+    void roboLeft();
+    void roboRight();
+    void roboDown();
+    void roboUp();
+    void startStopWallFollowing();
 };
 
 #endif // MAINWINDOW_H

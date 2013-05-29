@@ -152,6 +152,7 @@ void MiniMapping::keepRendering()
         ArUtil::sleep(33);
     }
     thread->exit();
+    thread->wait();
 }
 
 void MiniMapping::finishRendering()

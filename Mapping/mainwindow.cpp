@@ -30,40 +30,41 @@ void MainWindow::connectActions()
     connect(&architecture,SIGNAL(updateMiniMapScene(QGraphicsScene*)),this,SLOT(updateMiniGraphics(QGraphicsScene*)));
     connect(&architecture,SIGNAL(updateWorldMapScene(QGraphicsScene*)),this,SLOT(updateWorldGraphics(QGraphicsScene*)));
 
-    connect(ui->actionUp,SIGNAL(triggered()),this,SLOT(on_pbUp_clicked()));
-    connect(ui->actionDown,SIGNAL(triggered()),this,SLOT(on_pbDown_clicked()));
-    connect(ui->actionLeft,SIGNAL(triggered()),this,SLOT(on_pbLeft_clicked()));
-    connect(ui->actionRight,SIGNAL(triggered()),this,SLOT(on_pbRight_clicked()));
+    connect(ui->actionUp,SIGNAL(triggered()),this,SLOT(roboUp()));
+    connect(ui->actionDown,SIGNAL(triggered()),this,SLOT(roboDown()));
+    connect(ui->actionLeft,SIGNAL(triggered()),this,SLOT(roboLeft()));
+    connect(ui->actionRight,SIGNAL(triggered()),this,SLOT(roboRight()));
 
     playButton = new QToolButton();
     playButton->setIcon(QIcon("icons/Play-1-Hot-icon.png"));
     playButton->setCheckable(true);
     ui->mainToolBar->addWidget(playButton);
-    connect(playButton,SIGNAL(clicked()),this,SLOT(on_playbutton_clicked()));
+    connect(playButton,SIGNAL(clicked()),this,SLOT(startStopWallFollowing()));
 
     up = new QToolButton();
     up->setIcon(QIcon("icons/arrow-up-icon.png"));
     ui->mainToolBar->addWidget(up);
-    connect(up,SIGNAL(clicked()),this,SLOT(on_pbUp_clicked()));
+    connect(up,SIGNAL(clicked()),this,SLOT(roboUp()));
 
     down = new QToolButton();
     down->setIcon(QIcon("icons/arrow-down-icon.png"));
     ui->mainToolBar->addWidget(down);
-    connect(down,SIGNAL(clicked()),this,SLOT(on_pbDown_clicked()));
+    connect(down,SIGNAL(clicked()),this,SLOT(roboDown()));
 
     left = new QToolButton();
     left->setIcon(QIcon("icons/arrow-left-icon.png"));
     ui->mainToolBar->addWidget(left);
-    connect(left,SIGNAL(clicked()),this,SLOT(on_pbLeft_clicked()));
+    connect(left,SIGNAL(clicked()),this,SLOT(roboLeft()));
 
     right = new QToolButton();
     right->setIcon(QIcon("icons/arrow-right-icon.png"));
     ui->mainToolBar->addWidget(right);
-    connect(right,SIGNAL(clicked()),this,SLOT(on_pbRight_clicked()));
+    connect(right,SIGNAL(clicked()),this,SLOT(roboRight()));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    this->gl->stopRendering();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -96,37 +97,39 @@ void MainWindow::updateWorldGraphics(QGraphicsScene* newScene)
     delete oldScene;
 }
 
-void MainWindow::on_pbUp_clicked()
+void MainWindow::roboUp()
 {
     architecture.forward(100);
 }
 
-void MainWindow::on_pbDown_clicked()
+void MainWindow::roboDown()
 {
     architecture.backward(100);
 }
 
-void MainWindow::on_pbLeft_clicked()
+void MainWindow::roboLeft()
 {
     architecture.rotate(10);
 }
 
-void MainWindow::on_pbRight_clicked()
+void MainWindow::roboRight()
 {
     architecture.rotate(-10);
 }
 
-void MainWindow::on_playbutton_clicked()
+void MainWindow::startStopWallFollowing()
 {
     if(playButton->isChecked())
     {
         playButton->setIcon(QIcon("icons/Pause-Normal-Red-icon.png"));
-        architecture.startWallFollowing();
+        gl->startRendering();
+        //architecture.startWallFollowing();
     }
     else
     {
         playButton->setIcon(QIcon("icons/Play-1-Hot-icon.png"));
-        architecture.stopWallFollowing();
+        gl->stopRendering();
+        //architecture.stopWallFollowing();
     }
 }
 

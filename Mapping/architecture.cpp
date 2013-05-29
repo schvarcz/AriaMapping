@@ -13,6 +13,7 @@ Architecture::~Architecture()
 {
     wallFollowing->stop();
     miniMap->stop();
+    worldMap()->stop();
     mRobot->stop();
     mRobot->deleteLater();
     delete mRobot;
