@@ -7,7 +7,7 @@ Robot::Robot(const char * name, bool ignored,
     QObject()
 {
     int argc = 0;
-    char *argv = new char[0];
+    char *argv = NULL;
     parser = new ArArgumentParser(&argc,&argv);
     robotConnector = new ArRobotConnector(parser,this);
     laserConnector = new ArLaserConnector(parser,this,robotConnector);
