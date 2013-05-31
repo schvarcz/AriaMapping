@@ -23,6 +23,7 @@ void GLThread::stop()
 void GLThread::run()
 {
 
+    msleep(500);
     while(doRendering)
     {
         cout << "Rendering" << endl;

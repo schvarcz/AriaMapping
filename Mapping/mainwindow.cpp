@@ -122,14 +122,12 @@ void MainWindow::startStopWallFollowing()
     if(playButton->isChecked())
     {
         playButton->setIcon(QIcon("icons/Pause-Normal-Red-icon.png"));
-        gl->startRendering();
-        //architecture.startWallFollowing();
+        architecture.startWallFollowing();
     }
     else
     {
         playButton->setIcon(QIcon("icons/Play-1-Hot-icon.png"));
-        gl->stopRendering();
-        //architecture.stopWallFollowing();
+        architecture.stopWallFollowing();
     }
 }
 

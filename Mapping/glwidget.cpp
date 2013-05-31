@@ -7,6 +7,7 @@ GLWidget::GLWidget(QWidget *parent) :
     cout << parent->height() << endl;
     cout << parent->width() << endl;
     //setAutoBufferSwap(false);
+    startRendering();
 }
 
 GLWidget::~GLWidget()
