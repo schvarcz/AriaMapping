@@ -162,9 +162,12 @@ void Mapping::drawRobot()
 
     glColor3f(1.0f,0.0f,0.0f);
 
-    glBegin(GL_QUADS);
 
     int fator = 20;
+
+    //Draw red part (body)
+    glBegin(GL_QUADS);
+
     glVertex2i(-10*fator,5*fator);
     glVertex2i(10*fator,5*fator);
     glVertex2i(10*fator,-5*fator);
@@ -198,15 +201,16 @@ void Mapping::drawRobot()
 
     glEnd();
 
+    //Draw black box (deck)
     glColor3f(0.0f,0.0f,0.0f);
     glBegin(GL_QUADS);
-
 
     glVertex2i(-5*fator,-12*fator);
     glVertex2i(5*fator,-12*fator);
     glVertex2i(5*fator,0*fator);
     glVertex2i(-5*fator,0*fator);
 
+    //Draw blue box (laser)
     glColor3f(0.0f,0.0f,1.0f);
     glVertex2i(-5*fator,10*fator);
     glVertex2i(5*fator,10*fator);
