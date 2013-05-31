@@ -49,7 +49,7 @@ void GLWidget::initializeGL()
 {
     cout << "initialize GL" << endl;
 
-    qglClearColor(QColor(50,50,50));
+    qglClearColor(QColor(200,200,200));
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -92,7 +92,7 @@ void GLWidget::resizeGL(int w, int h)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    int size = 10000;
+    int size = 30000;
     glOrtho(-size, size, -size, size,-1,1);
     if(!mGLThread.isRunning())
         updateGL();

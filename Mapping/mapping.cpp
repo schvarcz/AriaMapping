@@ -9,7 +9,7 @@ Mapping::Mapping(Robot *robot) :
     this->moveToThread(thread);
     rangeMax = 3000;
 
-    celRange = 10000/MAP_LENGTH_WORLD;
+    celRange = 2*30000/MAP_LENGTH_WORLD;
 
     connect(thread,SIGNAL(started()),this,SLOT(keepRendering()));
     connect(thread,SIGNAL(finished()),this,SLOT(finishRendering()));
@@ -126,7 +126,7 @@ void Mapping::render()
             //cout << map[x][MAP_LENGTH-1-y] << " ";
             if(mapCell[x][y] != 0.7)
             {
-                int value = mapCell[x][y].cellValue();
+                int value = mapCell[x][y].cellValue()*255;
                 drawBox(
                             (x-MAP_LENGTH_WORLD/2)*celRange-1,
                             (y-MAP_LENGTH_WORLD/2)*celRange-1,
@@ -147,7 +147,7 @@ void Mapping::drawBox(double x, double y, double width, double height,QColor col
 {
     //glColor3f(color.redF()/255.0f,color.greenF()/255.0f,color.blueF()/255.0f);
     glColor3f(color.redF(),color.greenF(),color.blueF());
-    //glColor3f(1.0,1.0,0.0);
+    //glColor3f(0.7,0.7,0.7);
 
     glVertex2f(x,y);
     glVertex2f(x+width,y);
