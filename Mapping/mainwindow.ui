@@ -503,6 +503,8 @@
     <property name="title">
      <string>Controls</string>
     </property>
+    <addaction name="actionStart_Stop_Wall_Following"/>
+    <addaction name="separator"/>
     <addaction name="actionUp"/>
     <addaction name="actionDown"/>
     <addaction name="actionLeft"/>
@@ -558,6 +560,17 @@
    </property>
    <property name="shortcut">
     <string>Right</string>
+   </property>
+  </action>
+  <action name="actionStart_Stop_Wall_Following">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Start/Stop Wall Following</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>

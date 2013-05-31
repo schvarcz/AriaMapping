@@ -9,8 +9,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->connectActions();
 
-
-
     gl = new GLWidget(ui->GVMap);
     ui->GVMap->setViewport(gl);
 
@@ -39,7 +37,7 @@ void MainWindow::connectActions()
     playButton->setIcon(QIcon("icons/Play-1-Hot-icon.png"));
     playButton->setCheckable(true);
     ui->mainToolBar->addWidget(playButton);
-    connect(playButton,SIGNAL(clicked()),this,SLOT(startStopWallFollowing()));
+    connect(playButton,SIGNAL(toggled(bool)),this,SLOT(startStopWallFollowing()));
 
     up = new QToolButton();
     up->setIcon(QIcon("icons/arrow-up-icon.png"));
@@ -60,6 +58,9 @@ void MainWindow::connectActions()
     right->setIcon(QIcon("icons/arrow-right-icon.png"));
     ui->mainToolBar->addWidget(right);
     connect(right,SIGNAL(clicked()),this,SLOT(roboRight()));
+
+    connect(ui->actionStart_Stop_Wall_Following,SIGNAL(toggled(bool)),playButton,SLOT(setChecked(bool)));
+    connect(playButton,SIGNAL(toggled(bool)),ui->actionStart_Stop_Wall_Following,SLOT(setChecked(bool)));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
