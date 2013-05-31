@@ -42,66 +42,66 @@ void Mapping::resetMap()
 
 void Mapping::calculateMap()
 {
-  ArSensorReading ar = sensors->at(0); //Apenas para pegar as informações de posição do robo no momento da tomada de informações.
+    ArSensorReading ar = sensors->at(0); //Apenas para pegar as informações de posição do robo no momento da tomada de informações.
 
-  updateRoboPosition(ar.getXTaken(),ar.getYTaken(),ar.getThTaken());
+    updateRoboPosition(ar.getXTaken(),ar.getYTaken(),ar.getThTaken());
 
-  cout << "Calculando o mapa" << endl;
-  for(int x=max(0,x-40); x<min(MAP_LENGTH_WORLD,x+40);x++)
-  {
-      for(int y=max(0,y-40); y<min(MAP_LENGTH_WORLD,y+40);y++)
-      {
-          int angle = round(atan2(
-                                ((float)y - 0.5 - MAP_LENGTH_WORLD/2)*celRange-yRobo,
-                                ((float)x - 0.5 - MAP_LENGTH_WORLD/2)*celRange-xRobo
-                                )*180/M_PI)-90+thRobo;
-          float distance = sqrt(
-                                   pow(
-                                       x*celRange-xRobo,
-                                       2
-                                       )
-                                   +pow(
-                                       y*celRange-yRobo,
-                                       2
-                                       )
-                                   );
-          if ((angle>0) && (angle<=180))
-          {
-              float reading = (float)sensors->at(180-angle).getRange();
-              //ArSensorReading ar = sensors->at(180-angle);
+    cout << "Calculando o mapa" << endl;
 
-              //cout << "x: " << ar.getX() << " y: " << ar.getY() << endl;
-              //cout << "Taken x: " << ar.getXTaken() << " y: " << ar.getYTaken() << " th: " << ar.getThTaken() << endl;
+    float variacao = 100;//10 centimetros
 
-              //cout << x << " " << y << " " << angle << " " << distance << " " << reading << " " << celRange << endl;
+    for(int x=0; x<MAP_LENGTH_WORLD;x++)
+    {
+        for(int y=0; y<MAP_LENGTH_WORLD;y++)
+        {
+            int angle = round(atan2(
+                                  ((float)y + 0.5- MAP_LENGTH_WORLD/2)*celRange-yRobo,
+                                  ((float)x + 0.5 - MAP_LENGTH_WORLD/2)*celRange-xRobo
+                                  )*180/M_PI)+90-thRobo;
+            float distance = sqrt(
+                        pow(
+                            (x + 0.5 - MAP_LENGTH_WORLD/2)*celRange - xRobo,
+                            2
+                            )
+                        +pow(
+                            (y + 0.5 - MAP_LENGTH_WORLD/2 )*celRange - yRobo,
+                            2
+                            )
+                        );
 
-              float variacao = celRange;
+            if ((angle>0) && (angle<=180))
+            {
+                float reading = (float)sensors->at(180-angle).getRange();
 
-              if(reading + variacao <= distance)
-              {
-                  //cout << "Área desconhecida... " << endl;
-                  //mapCell[x][y] = 0.7;
-              }
-              else if(reading-variacao > distance)
-              {
-                  //cout << "Área vaga... " << endl;
-                  mapCell[x][y] = 1.0;
-              }
-              else if( (reading + variacao > distance) && (reading - variacao <= distance))
-              {
-                  //cout << "Parede... " << endl;
-                  mapCell[x][y] = 0.0;
-              }
+                if(reading > rangeMax)
+                    reading = rangeMax;
 
-          }
-          else
-          {
-              //mapCell[x][y] = 0.7;
-          }
-      }
-  }
+                //cout << x << " " << y << " " << angle << " " << distance << " " << reading << " " << celRange << endl;
 
-  //emit updateScreen();
+                if(reading + variacao < distance)
+                {
+                    //cout << "Área desconhecida... " << endl;
+                    //mapCell[x][y] = 0.7;
+                }
+                else if(reading - variacao > distance)
+                {
+                    //cout << "Área vaga... " << endl;
+                    mapCell[x][y] = 1.0;
+                    //cout << xRobo << " " << yRobo << " " << -(MAP_LENGTH_WORLD/2 - y)*celRange << " " << distance << endl;
+                }
+                else if((reading != rangeMax) && (reading - variacao <= distance) && (reading + variacao >= distance))
+                {
+                    //cout << "Parede... " << endl;
+                    mapCell[x][y] = 0.0;
+                }
+
+            }
+            else
+            {
+                //mapCell[x][y] = 0.7;
+            }
+        }
+    }
 }
 
 void Mapping::updateRoboPosition(float x, float y, float th)
@@ -215,7 +215,6 @@ void Mapping::drawRobot()
 
     glEnd();
 }
-
 
 void Mapping::keepRendering()
 {
