@@ -55,7 +55,7 @@ void Mapping::calculateMap()
         for(int y=0; y<MAP_LENGTH_WORLD;y++)
         {
             int angle = round(atan2(
-                                  ((float)y + 0.5- MAP_LENGTH_WORLD/2)*celRange-yRobo,
+                                  ((float)MAP_LENGTH_WORLD/2 - y + 0.5 )*celRange-yRobo,
                                   ((float)x + 0.5 - MAP_LENGTH_WORLD/2)*celRange-xRobo
                                   )*180/M_PI)+90-thRobo;
             float distance = sqrt(
@@ -64,7 +64,7 @@ void Mapping::calculateMap()
                             2
                             )
                         +pow(
-                            (y + 0.5 - MAP_LENGTH_WORLD/2 )*celRange - yRobo,
+                            (MAP_LENGTH_WORLD/2 - y + 0.5 )*celRange - yRobo,
                             2
                             )
                         );
@@ -134,7 +134,7 @@ void Mapping::render()
                 int value = mapCell[x][y].cellValue()*255;
                 drawBox(
                             (x-MAP_LENGTH_WORLD/2)*celRange-1,
-                            (y-MAP_LENGTH_WORLD/2)*celRange-1,
+                            (MAP_LENGTH_WORLD/2 - y)*celRange-1,
                             celRange,
                             celRange,
                             QColor(value,value,value)
