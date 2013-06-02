@@ -23,6 +23,7 @@ public:
     int getLaserRange(int angle);
     vector<ArSensorReading>* getLaserRanges();
     int getSonarRange(int id_sonar);
+    vector<ArSensorReading>* getSonarRanges();
     double getNorth();
     void readingSensors();
     bool shutdown();
@@ -37,6 +38,7 @@ private:
     ArLaserConnector *laserConnector;
     ArArgumentParser *parser;
     vector<ArSensorReading> *lasers = NULL;
+    vector<ArSensorReading> *sonares = NULL;
     QThread *thread;
     bool run;
 

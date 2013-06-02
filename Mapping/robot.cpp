@@ -12,6 +12,8 @@ Robot::Robot(const char * name, bool ignored,
     robotConnector = new ArRobotConnector(parser,this);
     laserConnector = new ArLaserConnector(parser,this,robotConnector);
 
+    sonares = new vector<ArSensorReading>();
+
     /*thread = new QThread();
     connect(thread,SIGNAL(started()),this,SLOT(keepReading()));
     connect(thread,SIGNAL(finished()),this,SLOT(stopReading()));
@@ -92,6 +94,17 @@ void Robot::readingSensors()
         }
         lasers = sick.getRawReadingsAsVector();
         sick.unlockDevice();
+
+        this->lock();
+        if(sonares)
+        {
+            sonares->clear();
+        }
+        for(int i=0;i<=7;i++)
+        {
+            sonares->push_back(*this->getSonarReading(i));
+        }
+        this->unlock();
     }
 }
 
@@ -106,7 +119,7 @@ vector<ArSensorReading>* Robot::getLaserRanges()
 {
     vector<ArSensorReading> *ret = new vector<ArSensorReading>();
     sick.lockDevice();
-    for (int i =0;i<=180;i++)
+    for (int i=0;i<=180;i++)
     {
         ret->push_back(ArSensorReading(this->lasers->at(i)));
     }
@@ -119,6 +132,18 @@ int Robot::getSonarRange(int id_sonar)
     if(id_sonar > 8)
         return 0;
     return ArRobot::getSonarRange(id_sonar);
+}
+
+vector<ArSensorReading>* Robot::getSonarRanges()
+{
+    vector<ArSensorReading> *ret = new vector<ArSensorReading>();
+    this->lock();
+    for(int i =0;i<=7;i++)
+    {
+        ret->push_back(ArSensorReading(sonares->at(i)));
+    }
+    this->unlock();
+    return ret;
 }
 
 double Robot::getNorth()
