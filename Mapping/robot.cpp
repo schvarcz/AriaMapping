@@ -87,6 +87,9 @@ void Robot::readingSensors()
 {
     if(this->isConnected() && sick.isConnected())
     {
+        /*while((!ArRobot::isMoveDone()) || (!ArRobot::isHeadingDone()))
+            ArUtil::sleep(33);*/
+        this->lock();
         sick.lockDevice();
         if(lasers)
         {
@@ -104,6 +107,7 @@ void Robot::readingSensors()
         {
             sonares->push_back(*this->getSonarReading(i));
         }
+        this->unlock();
         this->unlock();
     }
 }
@@ -131,7 +135,12 @@ int Robot::getSonarRange(int id_sonar)
 {
     if(id_sonar > 8)
         return 0;
-    return ArRobot::getSonarRange(id_sonar);
+   /* while((!ArRobot::isMoveDone()) || (!ArRobot::isHeadingDone()))
+        ArUtil::sleep(33);*/
+    this->lock();
+    int ret = ArRobot::getSonarRange(id_sonar);
+    this->unlock();
+    return ret;
 }
 
 vector<ArSensorReading>* Robot::getSonarRanges()
