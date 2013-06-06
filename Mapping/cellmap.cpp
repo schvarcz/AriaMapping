@@ -1,6 +1,7 @@
 #include "cellmap.h"
 
 CellMap::CellMap() :
+    himmCValue(-1),
     QObject()
 {
 }
@@ -18,6 +19,30 @@ void CellMap::setCellValue(float value)
 float CellMap::cellValue()
 {
     return value;
+}
+
+void CellMap::addHimmProbability()
+{
+    himmCValue += 3;
+    if(himmCValue > HIMM_MAX)
+        himmCValue = HIMM_MAX;
+}
+
+void CellMap::subHimmProbability()
+{
+    himmCValue -= 1;
+    if(himmCValue < HIMM_MIN)
+        himmCValue = HIMM_MIN;
+}
+
+int CellMap::himmValue()
+{
+    return himmCValue;
+}
+
+float CellMap::himmProbability()
+{
+    return himmCValue < 0 ? himmCValue :1.0 - ((float)himmCValue)/((float)(HIMM_MAX-HIMM_MIN));
 }
 
 void CellMap::setPolygonCell(QGraphicsPolygonItem *polygon)

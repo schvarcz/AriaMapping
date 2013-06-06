@@ -5,6 +5,9 @@
 #include <QtCore>
 #include <QtGui>
 
+#define HIMM_MAX 15
+#define HIMM_MIN 0
+
 class CellMap : public QObject
 {
     Q_OBJECT
@@ -15,6 +18,11 @@ public:
 
     float cellValue();
     void setCellValue(float value);
+
+    void addHimmProbability();
+    void subHimmProbability();
+    int himmValue();
+    float himmProbability();
 
     /* Apenas para facilitar uma transição entre um grid de floats e um grid de CellMap */
     void operator =(float value);
@@ -30,6 +38,7 @@ public:
 private:
     QGraphicsPolygonItem *poly = NULL;
     float value = 0.0;
+    int himmCValue;
     
 public slots:
 

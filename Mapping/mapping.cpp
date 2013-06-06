@@ -1,9 +1,10 @@
 #include "mapping.h"
 
-Mapping::Mapping(Robot *robot) :
+Mapping::Mapping(Robot *robot,Techniques tech) :
     QObject()
 {
     mRobot = robot;
+    this->technique = tech;
     thread = new QThread();
 
     this->moveToThread(thread);
@@ -40,13 +41,9 @@ void Mapping::resetMap()
     }
 }
 
-void Mapping::calculateMap()
+void Mapping::calculateMapDeadReckoning()
 {
-    ArSensorReading ar = sensors->at(0); //Apenas para pegar as informações de posição do robo no momento da tomada de informações.
-
-    updateRoboPosition(ar.getXTaken(),ar.getYTaken(),ar.getThTaken());
-
-    cout << "Calculando o mapa" << endl;
+    cout << "Calculando o mapa pelo metodo de Dead Reckoning" << endl;
 
     float variacao = 100;//10 centimetros
 
@@ -76,7 +73,7 @@ void Mapping::calculateMap()
 
             if ((angle>0) && (angle<=180))
             {
-                float reading = (float)sensors->at(180-angle).getRange();
+                float reading = (float)lasers->at(180-angle).getRange();
 
                 if(reading > rangeMax)
                     reading = rangeMax;
@@ -109,6 +106,52 @@ void Mapping::calculateMap()
     }
 }
 
+void Mapping::calculateMapBayes()
+{
+    cout << "Calculando o mapa pelo metodo de Bayes" << endl;
+
+}
+
+void Mapping::calculateMapHIMM()
+{
+    cout << "Calculando o mapa pelo metodo de HIMM" << endl;
+
+    for (int i =0;i<sonares->size();i++)
+    {
+        //cout << sonares->at(i).getSensorTh() << ": " << sonares->at(i).getRange() << endl;
+
+        float range = sonares->at(i).getRange(), angle = sonares->at(i).getSensorTh()+thRobo;
+
+        if (angle == -90 || angle == 90)
+            angle = -angle;
+
+        if(range > rangeMax)
+            range = rangeMax;
+
+        int x = floor(range*cos(angle*M_PI/180)/celRange), y = floor(range*sin(angle*M_PI/180)/celRange),
+                xRobo = floor(this->xRobo/celRange), yRobo = floor(this->yRobo/celRange);
+
+
+        if(range != rangeMax)
+            mapCell[xRobo+x+MAP_LENGTH_WORLD/2][MAP_LENGTH_WORLD/2 - (yRobo+y)].addHimmProbability();
+
+        double dx = x-xRobo, dy = y-yRobo;
+        float m = max(fabs(dx),fabs(dy));
+        double xStep = x/m, yStep = y/m;
+
+        for(int n=0;n<m;n++)
+        {
+
+            int nX = xRobo + n*xStep + MAP_LENGTH_WORLD/2;
+            int nY = MAP_LENGTH_WORLD/2 - (yRobo + n*yStep);
+            if((nX != xRobo+x+MAP_LENGTH_WORLD/2) && (nY != MAP_LENGTH_WORLD/2 - (yRobo+y)))
+                mapCell[nX][nY].subHimmProbability();
+
+        }
+    }
+
+}
+
 void Mapping::updateRoboPosition(float x, float y, float th)
 {
     //cout << "X: " << x << "  Y: " << y << endl;
@@ -129,9 +172,21 @@ void Mapping::render()
         for(int x=0; x<MAP_LENGTH_WORLD;x++)
         {
             //cout << map[x][MAP_LENGTH-1-y] << " ";
-            if(mapCell[x][y] != 0.7)
+            int value;
+
+            switch (technique) {
+            case MappingTechnique::HIMM:
+                value = mapCell[x][y].himmProbability();
+                break;
+            case MappingTechnique::DeadReckoning:
+            default:
+                value = mapCell[x][y].cellValue();
+                break;
+            }
+            //qDebug() << value << endl;
+            if(value != 0.7 && value >= 0)
             {
-                int value = mapCell[x][y].cellValue()*255;
+                value *= 255;
                 drawBox(
                             (x-MAP_LENGTH_WORLD/2)*celRange-1,
                             (MAP_LENGTH_WORLD/2 - y)*celRange-1,
@@ -141,7 +196,6 @@ void Mapping::render()
                             );
             }
         }
-        //cout << endl;
     }
     glEnd();
 
@@ -230,14 +284,29 @@ void Mapping::keepRendering()
     resetMap();
     while(run)
     {
-        if(sensors != NULL)
+        if(lasers != NULL)
         {
-            sensors->clear();
-            delete sensors;
+            lasers->clear();
+            delete lasers;
         }
         mRobot->readingSensors();
-        sensors = mRobot->getLaserRanges();
-        calculateMap();
+        lasers = mRobot->getLaserRanges();
+        sonares = mRobot->getSonarRanges();
+        sensores = sonares;
+
+        ArSensorReading ar = sensores->at(0); //Apenas para pegar as informações de posição do robo no momento da tomada de informações.
+        updateRoboPosition(ar.getXTaken(),ar.getYTaken(),ar.getThTaken());
+        switch(this->technique)
+        {
+        case MappingTechnique::DeadReckoning:
+            calculateMapDeadReckoning();
+            break;
+        case MappingTechnique::BAYES:
+            calculateMapBayes();
+        case MappingTechnique::HIMM:
+            calculateMapHIMM();
+            break;
+        }
         ArUtil::sleep(33);
     }
     thread->exit();

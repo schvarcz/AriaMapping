@@ -15,28 +15,43 @@
 
 using namespace std;
 
+namespace MappingTechnique
+{
+    enum Techniques
+    {
+        DeadReckoning,
+        BAYES,
+        HIMM
+    };
+}
+
+using namespace MappingTechnique;
+
 class Mapping : public QObject
 {
     Q_OBJECT
 public:
-    explicit Mapping(Robot *robot);
+    explicit Mapping(Robot *robot,Techniques tech = MappingTechnique::HIMM);
     void start();
     void stop();
     void render();
 
 private:
     void resetMap();
-    void calculateMap();
+    void calculateMapDeadReckoning();
+    void calculateMapHIMM();
+    void calculateMapBayes();
     void updateRoboPosition(float x,float y,float th);
     void drawBox(double xi,double yi,double xf,double yf,QColor color);
     void drawRobot();
     Robot *mRobot;
-    vector<ArSensorReading> *sensors = NULL;
+    vector<ArSensorReading> *lasers = NULL, *sonares = NULL, *sensores = NULL;
     QThread *thread;
     CellMap mapCell[MAP_LENGTH_WORLD][MAP_LENGTH_WORLD];
     bool run;
     double rangeMax, celRange;
     float xRobo,yRobo, thRobo;
+    Techniques technique;
 
 
 
