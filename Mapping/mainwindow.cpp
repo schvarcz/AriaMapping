@@ -100,22 +100,22 @@ void MainWindow::updateWorldGraphics(QGraphicsScene* newScene)
 
 void MainWindow::roboUp()
 {
-    architecture.forward(100);
+    architecture.forward(200);
 }
 
 void MainWindow::roboDown()
 {
-    architecture.backward(100);
+    architecture.backward(200);
 }
 
 void MainWindow::roboLeft()
 {
-    architecture.rotate(10);
+    architecture.rotate(15);
 }
 
 void MainWindow::roboRight()
 {
-    architecture.rotate(-10);
+    architecture.rotate(-15);
 }
 
 void MainWindow::startStopWallFollowing()
