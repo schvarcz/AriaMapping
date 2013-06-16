@@ -2,6 +2,8 @@
 
 CellMap::CellMap() :
     himmCValue(-1),
+    pVazia(0.5),
+    pOcupada(0.5),
     QObject()
 {
 }
@@ -43,6 +45,39 @@ int CellMap::himmValue()
 float CellMap::himmProbability()
 {
     return himmCValue < 0 ? himmCValue :1.0 - ((float)himmCValue)/((float)(HIMM_MAX-HIMM_MIN));
+}
+
+double CellMap::probabilidadeOcupada()
+{
+    return pOcupada;
+}
+
+double CellMap::probabilidadeVazia()
+{
+    return pVazia;
+}
+
+void CellMap::setProbabilidadeOcupada(double value)
+{
+    if(value >0 && value <1.0)
+    {
+        pOcupada = value;
+        pVazia = 1.0-pOcupada;
+    }
+}
+
+void CellMap::setProbabilidadeVazia(double value)
+{
+    if(value >0 && value <1.0)
+    {
+        pVazia = value;
+        pOcupada = 1.0-pVazia;
+    }
+}
+
+double CellMap::isBayesProbability()
+{
+    return pOcupada != 0.5?pOcupada>0.1?1.0:0.0:0.5;
 }
 
 void CellMap::setPolygonCell(QGraphicsPolygonItem *polygon)

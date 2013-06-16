@@ -8,7 +8,7 @@ Mapping::Mapping(Robot *robot,Techniques tech) :
     thread = new QThread();
 
     this->moveToThread(thread);
-    rangeMax = 3000;
+    rangeMax = 5000;
 
     celRange = 2*30000/MAP_LENGTH_WORLD;
 
@@ -110,6 +110,88 @@ void Mapping::calculateMapBayes()
 {
     cout << "Calculando o mapa pelo metodo de Bayes" << endl;
 
+    float variacao = 100;//10 centimetros
+    float pMax = 0.90;
+    double aberturaSonar = 20.0;
+
+    for(int x=0; x<MAP_LENGTH_WORLD;x++)
+    {
+        for(int y=0; y<MAP_LENGTH_WORLD;y++)
+        {
+            double angle = round(atan2(
+                                  ((float)MAP_LENGTH_WORLD/2 - y + 0.5 )*celRange-yRobo,
+                                  ((float)x + 0.5 - MAP_LENGTH_WORLD/2)*celRange-xRobo
+                                  )*180/M_PI)-thRobo;
+            float distance = sqrt(
+                        pow(
+                            (x + 0.5 - MAP_LENGTH_WORLD/2)*celRange - xRobo,
+                            2
+                            )
+                        +pow(
+                            (MAP_LENGTH_WORLD/2 - y + 0.5 )*celRange - yRobo,
+                            2
+                            )
+                        );
+
+            if(angle < -180)
+                angle += 360;
+            if(angle > 180)
+                angle -= 360;
+
+            for(int i =0;i<sonares->size();i++)
+            {
+
+                float angleSensor = sonares->at(i).getSensorTh();
+
+                if(fabs(angle-angleSensor) <= aberturaSonar/2)
+                {
+                    float reading = sonares->at(i).getRange();
+                    double pOcupada, pVazia;
+                    pOcupada = pVazia = 0.5;
+
+                    if(reading > rangeMax)
+                    {
+                        reading = rangeMax;
+                    }
+                    if(reading + variacao < distance)
+                    {
+                        //cout << "Área desconhecida... " << endl;
+                    }
+                   /* else if(reading == rangeMax)
+                    {
+                        pVazia = pMax;
+                        pOcupada = 1.0-pVazia;
+                    }*/
+                    else if(reading - variacao > distance)
+                    {
+                        //cout << "Área vaga... " << endl;
+                        pVazia = 0.5*((rangeMax-distance)/rangeMax + (aberturaSonar-fabs(angle-angleSensor))/aberturaSonar);
+                        pVazia = max(pVazia, 1.0-pMax);
+                        pOcupada = 1.0 - pVazia;
+
+                    }
+                    else if((reading - variacao <= distance) && (reading + variacao >= distance))
+                    {
+                        //cout << "Parede... " << endl;
+                        pOcupada = 0.5*pMax*((rangeMax-distance)/rangeMax + (aberturaSonar-fabs(angle-angleSensor))/aberturaSonar);
+                        //pVazia = max(pOcupada, 1.0-pMax);
+                        pVazia = 1.0 - pOcupada;
+
+                    }
+                    mapCell[x][y].setProbabilidadeOcupada(
+                                pOcupada*mapCell[x][y].probabilidadeOcupada()
+                                /
+                                (pOcupada*mapCell[x][y].probabilidadeOcupada() + pVazia*mapCell[x][y].probabilidadeVazia())
+                                );
+
+                    if(mapCell[x][y].probabilidadeVazia() == 0.0)
+                        cout << "ZERO!!!!" << endl;
+                    break;
+                }
+            }
+        }
+    }
+
 }
 
 void Mapping::calculateMapHIMM()
@@ -172,9 +254,13 @@ void Mapping::render()
         for(int x=0; x<MAP_LENGTH_WORLD;x++)
         {
             //cout << map[x][MAP_LENGTH-1-y] << " ";
-            int value;
+            double value;
 
             switch (technique) {
+            case MappingTechnique::BAYES:
+                value = 1.0 - mapCell[x][y].probabilidadeOcupada();
+                //value = 1.0 - mapCell[x][y].isBayesProbability();
+                break;
             case MappingTechnique::HIMM:
                 value = mapCell[x][y].himmProbability();
                 break;
@@ -184,7 +270,7 @@ void Mapping::render()
                 break;
             }
             //qDebug() << value << endl;
-            if(value != 0.7 && value >= 0)
+            if(value != 0.7 && value >= 0 && value != 0.5)
             {
                 value *= 255;
                 drawBox(
@@ -303,6 +389,7 @@ void Mapping::keepRendering()
             break;
         case MappingTechnique::BAYES:
             calculateMapBayes();
+            break;
         case MappingTechnique::HIMM:
             calculateMapHIMM();
             break;

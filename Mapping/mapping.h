@@ -31,7 +31,7 @@ class Mapping : public QObject
 {
     Q_OBJECT
 public:
-    explicit Mapping(Robot *robot,Techniques tech = MappingTechnique::HIMM);
+    explicit Mapping(Robot *robot,Techniques tech = MappingTechnique::BAYES);
     void start();
     void stop();
     void render();

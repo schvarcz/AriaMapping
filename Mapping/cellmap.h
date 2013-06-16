@@ -24,6 +24,12 @@ public:
     int himmValue();
     float himmProbability();
 
+    double probabilidadeOcupada();
+    double probabilidadeVazia();
+    void setProbabilidadeOcupada(double value);
+    void setProbabilidadeVazia(double value);
+    double isBayesProbability();
+
     /* Apenas para facilitar uma transição entre um grid de floats e um grid de CellMap */
     void operator =(float value);
     float operator *(float value);
@@ -39,6 +45,7 @@ private:
     QGraphicsPolygonItem *poly = NULL;
     float value = 0.0;
     int himmCValue;
+    double pVazia, pOcupada;
     
 public slots:
 
