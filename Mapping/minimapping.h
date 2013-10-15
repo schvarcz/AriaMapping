@@ -28,7 +28,7 @@ private:
     void drawBox(double xi,double yi,double xf,double yf, QBrush color);
     Robot *mRobot;
     QGraphicsView *mView;
-    vector<ArSensorReading> *sensors = NULL;
+    vector<ArSensorReading> *sensors;
     QThread *thread;
     float map[MAP_LENGTH_MINI][MAP_LENGTH_MINI];
     bool run;

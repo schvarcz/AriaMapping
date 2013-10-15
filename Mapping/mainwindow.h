@@ -34,8 +34,6 @@ private:
     QToolButton *up, *down, *left, *right, *playButton;
 
 private slots:
-    void updateMiniGraphics(QGraphicsScene* newScene);
-    void updateWorldGraphics(QGraphicsScene* newScene);
 
     void roboLeft();
     void roboRight();

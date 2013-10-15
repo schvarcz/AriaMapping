@@ -1,7 +1,10 @@
 #include "mapping.h"
 
 Mapping::Mapping(Robot *robot,Techniques tech) :
-    QObject()
+    QObject(),
+    lasers(NULL),
+    sonares(NULL),
+    sensores(NULL)
 {
     mRobot = robot;
     this->technique = tech;
@@ -157,15 +160,15 @@ void Mapping::calculateMapBayes()
                     {
                         //cout << "Área desconhecida... " << endl;
                     }
-                   /* else if(reading == rangeMax)
+                    else if(reading == rangeMax)
                     {
                         pVazia = pMax;
                         pOcupada = 1.0-pVazia;
-                    }*/
+                    }
                     else if(reading - variacao > distance)
                     {
                         //cout << "Área vaga... " << endl;
-                        pVazia = 0.5*((rangeMax-distance)/rangeMax + (aberturaSonar-fabs(angle-angleSensor))/aberturaSonar);
+                        pVazia = 0.5*((2*rangeMax-distance)/(2*rangeMax) + (aberturaSonar-fabs(angle-angleSensor))/aberturaSonar);
                         pVazia = max(pVazia, 1.0-pMax);
                         pOcupada = 1.0 - pVazia;
 
@@ -173,7 +176,7 @@ void Mapping::calculateMapBayes()
                     else if((reading - variacao <= distance) && (reading + variacao >= distance))
                     {
                         //cout << "Parede... " << endl;
-                        pOcupada = 0.5*pMax*((rangeMax-distance)/rangeMax + (aberturaSonar-fabs(angle-angleSensor))/aberturaSonar);
+                        pOcupada = 0.5*pMax*((2*rangeMax-distance)/(2*rangeMax) + (aberturaSonar-fabs(angle-angleSensor))/aberturaSonar);
                         //pVazia = max(pOcupada, 1.0-pMax);
                         pVazia = 1.0 - pOcupada;
 
@@ -203,9 +206,6 @@ void Mapping::calculateMapHIMM()
         //cout << sonares->at(i).getSensorTh() << ": " << sonares->at(i).getRange() << endl;
 
         float range = sonares->at(i).getRange(), angle = sonares->at(i).getSensorTh()+thRobo;
-
-        if (angle == -90 || angle == 90)
-            angle = -angle;
 
         if(range > rangeMax)
             range = rangeMax;
@@ -290,14 +290,12 @@ void Mapping::render()
 
 void Mapping::drawBox(double x, double y, double width, double height,QColor color)
 {
-    //glColor3f(color.redF()/255.0f,color.greenF()/255.0f,color.blueF()/255.0f);
     glColor3f(color.redF(),color.greenF(),color.blueF());
-    //glColor3f(0.7,0.7,0.7);
 
-    glVertex2f(x,y);
-    glVertex2f(x+width,y);
-    glVertex2f(x+width,y+height);
-    glVertex2f(x,y+height);
+    glVertex3f(x,y,0.0f);
+    glVertex3f(x+width,y,0.0f);
+    glVertex3f(x+width,y+height,0.0f);
+    glVertex3f(x,y+height,0.0f);
 }
 
 void Mapping::drawRobot()
@@ -313,36 +311,36 @@ void Mapping::drawRobot()
     //Draw red part (body)
     glBegin(GL_QUADS);
 
-    glVertex2i(-10*fator,5*fator);
-    glVertex2i(10*fator,5*fator);
-    glVertex2i(10*fator,-5*fator);
-    glVertex2i(-10*fator,-5*fator);
+    glVertex3i(-10*fator,5*fator,15000.0f);
+    glVertex3i(10*fator,5*fator,15000.0f);
+    glVertex3i(10*fator,-5*fator,15000.0f);
+    glVertex3i(-10*fator,-5*fator,15000.0f);
 
-    glVertex2i(-5*fator,12*fator);
-    glVertex2i(5*fator,12*fator);
-    glVertex2i(5*fator,-12*fator);
-    glVertex2i(-5*fator,-12*fator);
+    glVertex3i(-5*fator,12*fator,15000.0f);
+    glVertex3i(5*fator,12*fator,15000.0f);
+    glVertex3i(5*fator,-12*fator,15000.0f);
+    glVertex3i(-5*fator,-12*fator,15000.0f);
 
     glEnd();
 
     glBegin(GL_TRIANGLES);
 
-    glVertex2i(-5*fator,-12*fator);
-    glVertex2i(-5*fator,-5*fator);
-    glVertex2i(-10*fator,-5*fator);
+    glVertex3i(-5*fator,-12*fator,15000.0f);
+    glVertex3i(-5*fator,-5*fator,15000.0f);
+    glVertex3i(-10*fator,-5*fator,15000.0f);
 
-    glVertex2i(5*fator,12*fator);
-    glVertex2i(5*fator,5*fator);
-    glVertex2i(10*fator,5*fator);
+    glVertex3i(5*fator,12*fator,15000.0f);
+    glVertex3i(5*fator,5*fator,15000.0f);
+    glVertex3i(10*fator,5*fator,15000.0f);
 
-    glVertex2i(-5*fator,12*fator);
-    glVertex2i(-5*fator,5*fator);
-    glVertex2i(-10*fator,5*fator);
+    glVertex3i(-5*fator,12*fator,15000.0f);
+    glVertex3i(-5*fator,5*fator,15000.0f);
+    glVertex3i(-10*fator,5*fator,15000.0f);
 
 
-    glVertex2i(5*fator,-12*fator);
-    glVertex2i(5*fator,-5*fator);
-    glVertex2i(10*fator,-5*fator);
+    glVertex3i(5*fator,-12*fator,15000.0f);
+    glVertex3i(5*fator,-5*fator,15000.0f);
+    glVertex3i(10*fator,-5*fator,15000.0f);
 
     glEnd();
 
@@ -350,19 +348,23 @@ void Mapping::drawRobot()
     glColor3f(0.0f,0.0f,0.0f);
     glBegin(GL_QUADS);
 
-    glVertex2i(-5*fator,-12*fator);
-    glVertex2i(5*fator,-12*fator);
-    glVertex2i(5*fator,0*fator);
-    glVertex2i(-5*fator,0*fator);
+    glVertex3i(-5*fator,-12*fator,15000.0f+1.0);
+    glVertex3i(5*fator,-12*fator,15000.0f+1.0);
+    glVertex3i(5*fator,0*fator,15000.0f+1.0);
+    glVertex3i(-5*fator,0*fator,15000.0f+1.0);
 
     //Draw blue box (laser)
     glColor3f(0.0f,0.0f,1.0f);
-    glVertex2i(-5*fator,10*fator);
-    glVertex2i(5*fator,10*fator);
-    glVertex2i(5*fator,5*fator);
-    glVertex2i(-5*fator,5*fator);
+    glVertex3i(-5*fator,10*fator,15000.0f+1.0);
+    glVertex3i(5*fator,10*fator,15000.0f+1.0);
+    glVertex3i(5*fator,5*fator,15000.0f+1.0);
+    glVertex3i(-5*fator,5*fator,15000.0f+1.0);
 
     glEnd();
+
+
+    glRotated(90-thRobo,0.0,0.0,1.0);
+    glTranslated(-xRobo,-yRobo,0.0);
 }
 
 void Mapping::keepRendering()

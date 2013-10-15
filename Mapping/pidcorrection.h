@@ -10,7 +10,7 @@ public:
     double getCorrection(double deltaTime);
     double getDistance();
     ArRangeDevice *rangeDevice;
-    double integral = 0, erro_anterior = 0,desiredValue ,
+    double integral, erro_anterior,desiredValue ,
         kp, ki, kd, startAngle, finishAngle;
 private:
 

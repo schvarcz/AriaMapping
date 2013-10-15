@@ -1,6 +1,8 @@
 #include "pidcorrection.h"
 
-PIDCorrection::PIDCorrection( ArRangeDevice *rangeDevice, double startAngle, double finishAngle, double desiredValue)
+PIDCorrection::PIDCorrection( ArRangeDevice *rangeDevice, double startAngle, double finishAngle, double desiredValue):
+    erro_anterior(0.0),
+    integral(0.0)
 {
     this->rangeDevice = rangeDevice;
     this->startAngle = startAngle;
@@ -13,7 +15,7 @@ PIDCorrection::PIDCorrection( ArRangeDevice *rangeDevice, double startAngle, dou
     //.6 .002 .003 MUITO suave, mas ocila muita na linha reta
     this->kp = 0.8;
     this->ki = 0;
-    this->kd = 0.03;
+    this->kd = 0.3;
 }
 
 double PIDCorrection::getCorrection(double deltaTime)

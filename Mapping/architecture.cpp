@@ -6,14 +6,17 @@ Architecture::Architecture() : QObject()
     mRobot->start();
 
     wallFollowing = new WallFollowing(mRobot);
-    mWorldMap = new Mapping(mRobot);
+    mWorldMap = new Mapping(mRobot,MappingTechnique::DeadReckoning);
+    mWorldMap->start();
+    mCampoPotencial = new CampoPotencial(mWorldMap,500);
+    mCampoPotencial->start();
+    mControlRobot = new ControlRobot(mCampoPotencial,mRobot);
 }
 
 Architecture::~Architecture()
 {
     wallFollowing->stop();
-    miniMap->stop();
-    worldMap()->stop();
+    mWorldMap->stop();
     mRobot->stop();
     mRobot->deleteLater();
     delete mRobot;
@@ -21,35 +24,14 @@ Architecture::~Architecture()
 
 void Architecture::startWallFollowing()
 {
+    //mControlRobot->start();
     wallFollowing->start();
 }
 
 void Architecture::stopWallFollowing()
 {
+    //mControlRobot->exit();
     wallFollowing->stop();
-}
-
-void Architecture::setMiniMapGraphicsView(QGraphicsView *view)
-{
-    if(miniMap != NULL)
-    {
-        miniMap->stop();
-    }
-
-    miniMap = new MiniMapping(mRobot,view);
-    connect(miniMap,SIGNAL(updateScene(QGraphicsScene*)),this,SIGNAL(updateMiniMapScene(QGraphicsScene*)));
-    miniMap->start();
-}
-
-void Architecture::setWorldMapGraphicsView()
-{
-    if(mWorldMap != NULL)
-    {
-        mWorldMap->stop();
-    }
-
-    mWorldMap = new Mapping(mRobot);
-    mWorldMap->start();
 }
 
 void Architecture::forward(int distance)

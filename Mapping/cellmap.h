@@ -23,6 +23,7 @@ public:
     void subHimmProbability();
     int himmValue();
     float himmProbability();
+    float isHimmProbability();
 
     double probabilidadeOcupada();
     double probabilidadeVazia();
@@ -42,8 +43,8 @@ public:
     bool operator >=(float value);
 
 private:
-    QGraphicsPolygonItem *poly = NULL;
-    float value = 0.0;
+    QGraphicsPolygonItem *poly;
+    float value;
     int himmCValue;
     double pVazia, pOcupada;
     

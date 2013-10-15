@@ -8,6 +8,8 @@
 #include <QtCore>
 #include <QtGui>
 #include <mapping.h>
+#include <campopotencial.h>
+#include <controlrobot.h>
 
 class Architecture : public QObject
 {
@@ -21,22 +23,19 @@ public:
     void forward(int distance);
     void backward(int distance);
     void rotate(float degrees);
-    void setMiniMapGraphicsView(QGraphicsView *view);
-    QGraphicsScene* miniMapScene(){ return miniMap->mScene;}
-    void setWorldMapGraphicsView();
     Mapping* worldMap(){ return this->mWorldMap; }
+    CampoPotencial* campoPotencial(){ return this->mCampoPotencial; }
 
 private:
-    Robot *mRobot = NULL;
-    Mapping *mWorldMap = NULL;
-    MiniMapping *miniMap = NULL;
-    WallFollowing *wallFollowing = NULL;
+    Robot *mRobot;
+    Mapping *mWorldMap;
+    WallFollowing *wallFollowing;
+    CampoPotencial *mCampoPotencial;
+    ControlRobot *mControlRobot;
 
 public slots:
 
 signals:
-    void updateMiniMapScene(QGraphicsScene* newScene);
-    void updateWorldMapScene(QGraphicsScene* newScene);
 
 };
 

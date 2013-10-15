@@ -32,7 +32,7 @@ public:
 private:
     Robot *mRobot;
     QThread *thread;
-    bool run = true;
+    bool run;
     Behavior currentBehavior;
 
     void walkWithPIDCorrection(double velocity,double correction);

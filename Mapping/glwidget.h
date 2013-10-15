@@ -2,12 +2,15 @@
 #define GLWIDGET_H
 
 #include <QObject>
+#include <QtCore>
 #include <QtOpenGL/QGLWidget>
 #include <QtOpenGL/QGLFormat>
 #include <QResizeEvent>
 #include <iostream>
-#include <mapping.h>
 #include <glthread.h>
+#include <math.h>
+#include <irendermap.h>
+#include <mapping.h>
 
 using namespace std;
 
@@ -24,8 +27,8 @@ public:
     void startRendering();
     void stopRendering();
     bool isRendering();
-    void setMapping(Mapping *mapping);
-    Mapping* mapping();
+    void setRendingMap(IRenderMap *rendingMap);
+    IRenderMap* rendingMap();
     void resizeGL(int w, int h);
 
 protected:
@@ -34,11 +37,16 @@ protected:
     void resizeEvent(QResizeEvent *event);
     void closeEvent(QCloseEvent *event);
     void paintEvent(QPaintEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
     
 private:
     int width, height;
-    Mapping *mMapping = NULL;
+    IRenderMap *mRendingMap;
     GLThread mGLThread;
+    double tx,ty,tz,rx,ry,rz;
+    QPoint *oldMousePosition;
 
 public slots:
     void updateScreen();

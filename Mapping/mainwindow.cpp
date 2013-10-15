@@ -9,12 +9,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->connectActions();
 
-    gl = new GLWidget(ui->GVMap);
-    ui->GVMap->setViewport(gl);
+    gl = new GLWidget(ui->centralWidget);
 
-    architecture.setMiniMapGraphicsView(ui->GVSensor);
-    architecture.setWorldMapGraphicsView();
-    gl->setMapping(architecture.worldMap());
+    //gl->setRendingMap(architecture.campoPotencial());
+    gl->setRendingMap(architecture.worldMap());
 
 }
 
@@ -25,8 +23,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::connectActions()
 {
-    connect(&architecture,SIGNAL(updateMiniMapScene(QGraphicsScene*)),this,SLOT(updateMiniGraphics(QGraphicsScene*)));
-    connect(&architecture,SIGNAL(updateWorldMapScene(QGraphicsScene*)),this,SLOT(updateWorldGraphics(QGraphicsScene*)));
 
     connect(ui->actionUp,SIGNAL(triggered()),this,SLOT(roboUp()));
     connect(ui->actionDown,SIGNAL(triggered()),this,SLOT(roboDown()));
@@ -71,31 +67,13 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QMainWindow::resizeEvent(event);
-    gl->resize(ui->GVMap->width(),ui->GVMap->height());
+    gl->resize(ui->centralWidget->width(),ui->centralWidget->height());
 }
 
 void MainWindow::showEvent(QShowEvent *event)
 {
     QMainWindow::showEvent(event);
-    gl->resize(ui->GVMap->width(),ui->GVMap->height());
-}
-
-
-void MainWindow::updateMiniGraphics(QGraphicsScene* newScene)
-{
-    QGraphicsScene* oldScene = ui->GVSensor->scene();
-    ui->GVSensor->setScene(newScene);
-    ui->GVSensor->fitInView(0,0,newScene->width(),newScene->height());
-    oldScene->clear();
-    delete oldScene;
-}
-
-void MainWindow::updateWorldGraphics(QGraphicsScene* newScene)
-{
-    QGraphicsScene* oldScene = ui->GVMap->scene();
-    ui->GVMap->setScene(newScene);
-    oldScene->clear();
-    delete oldScene;
+    gl->resize(ui->centralWidget->width(),ui->centralWidget->height());
 }
 
 void MainWindow::roboUp()

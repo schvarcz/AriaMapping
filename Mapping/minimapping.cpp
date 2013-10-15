@@ -1,7 +1,8 @@
 #include "minimapping.h"
 
 MiniMapping::MiniMapping(Robot *robot,QGraphicsView *view) :
-    QObject()
+    QObject(),
+    sensors(NULL)
 {
     mRobot = robot;
     mView = view;

@@ -10,6 +10,7 @@
 #include <cellmap.h>
 #include <QtOpenGL/QGLWidget>
 #include <QtOpenGL/QGLFormat>
+#include <irendermap.h>
 
 #define MAP_LENGTH_WORLD 500
 
@@ -27,14 +28,17 @@ namespace MappingTechnique
 
 using namespace MappingTechnique;
 
-class Mapping : public QObject
+class Mapping : public QObject, public IRenderMap
 {
     Q_OBJECT
 public:
-    explicit Mapping(Robot *robot,Techniques tech = MappingTechnique::BAYES);
+    explicit Mapping(Robot *robot,Techniques tech = MappingTechnique::DeadReckoning);
     void start();
     void stop();
-    void render();
+    virtual void render();
+    CellMap mapCell[MAP_LENGTH_WORLD][MAP_LENGTH_WORLD];
+    void drawRobot();
+    float xRobo,yRobo, thRobo;
 
 private:
     void resetMap();
@@ -43,14 +47,11 @@ private:
     void calculateMapBayes();
     void updateRoboPosition(float x,float y,float th);
     void drawBox(double xi,double yi,double xf,double yf,QColor color);
-    void drawRobot();
     Robot *mRobot;
-    vector<ArSensorReading> *lasers = NULL, *sonares = NULL, *sensores = NULL;
+    vector<ArSensorReading> *lasers, *sonares, *sensores;
     QThread *thread;
-    CellMap mapCell[MAP_LENGTH_WORLD][MAP_LENGTH_WORLD];
     bool run;
     double rangeMax, celRange;
-    float xRobo,yRobo, thRobo;
     Techniques technique;
 
 

@@ -4,7 +4,9 @@ Robot::Robot(const char * name, bool ignored,
              bool doSigHandle,
              bool normalInit, bool addAriaExitCallback):
     ArRobot(name, ignored, doSigHandle, normalInit, addAriaExitCallback),
-    QObject()
+    QObject(),
+    sonares(NULL),
+    lasers(NULL)
 {
     int argc = 0;
     char *argv = NULL;
@@ -97,6 +99,7 @@ void Robot::readingSensors()
         }
         lasers = sick.getRawReadingsAsVector();
         sick.unlockDevice();
+        this->unlock();
 
         this->lock();
         if(sonares)
@@ -107,7 +110,6 @@ void Robot::readingSensors()
         {
             sonares->push_back(*this->getSonarReading(i));
         }
-        this->unlock();
         this->unlock();
     }
 }
@@ -122,12 +124,16 @@ int Robot::getLaserRange(int angle)
 vector<ArSensorReading>* Robot::getLaserRanges()
 {
     vector<ArSensorReading> *ret = new vector<ArSensorReading>();
+    /*while((!ArRobot::isMoveDone()) || (!ArRobot::isHeadingDone()))
+        ArUtil::sleep(33);*/
+    this->lock();
     sick.lockDevice();
     for (int i=0;i<=180;i++)
     {
         ret->push_back(ArSensorReading(this->lasers->at(i)));
     }
     sick.unlockDevice();
+    this->unlock();
     return ret;
 }
 
@@ -135,7 +141,7 @@ int Robot::getSonarRange(int id_sonar)
 {
     if(id_sonar > 8)
         return 0;
-   /* while((!ArRobot::isMoveDone()) || (!ArRobot::isHeadingDone()))
+    /*while((!ArRobot::isMoveDone()) || (!ArRobot::isHeadingDone()))
         ArUtil::sleep(33);*/
     this->lock();
     int ret = ArRobot::getSonarRange(id_sonar);
@@ -163,6 +169,8 @@ double Robot::getNorth()
 void Robot::move(int distanceMM)
 {
     ArLog::log(ArLog::Normal,"Movendo: %d",distanceMM);
+    /*while((!ArRobot::isMoveDone()) || (!ArRobot::isHeadingDone()))
+        ArUtil::sleep(33);*/
     this->lock();
     ArRobot::move(distanceMM);
     this->unlock();
@@ -171,6 +179,8 @@ void Robot::move(int distanceMM)
 void Robot::rotate(int degrees)
 {
     ArLog::log(ArLog::Normal,"Rotacionando: %d",degrees);
+    /*while((!ArRobot::isMoveDone()) || (!ArRobot::isHeadingDone()))
+        ArUtil::sleep(33);*/
     this->lock();
     ArRobot::setDeltaHeading(degrees);
     this->unlock();

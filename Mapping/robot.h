@@ -37,8 +37,8 @@ private:
     ArRobotConnector *robotConnector;
     ArLaserConnector *laserConnector;
     ArArgumentParser *parser;
-    vector<ArSensorReading> *lasers = NULL;
-    vector<ArSensorReading> *sonares = NULL;
+    vector<ArSensorReading> *lasers;
+    vector<ArSensorReading> *sonares;
     QThread *thread;
     bool run;
 

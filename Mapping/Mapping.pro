@@ -22,7 +22,11 @@ SOURCES += main.cpp\
     mapping.cpp \
     cellmap.cpp \
     glwidget.cpp \
-    glthread.cpp
+    glthread.cpp \
+    campopotencial.cpp \
+    paletacores.cpp \
+    irendermap.cpp \
+    controlrobot.cpp
 
 HEADERS  += mainwindow.h \
     robot.h \
@@ -33,7 +37,11 @@ HEADERS  += mainwindow.h \
     mapping.h \
     cellmap.h \
     glthread.h \
-    glwidget.h
+    glwidget.h \
+    campopotencial.h \
+    paletacores.h \
+    irendermap.h \
+    controlrobot.h
 
 FORMS    += mainwindow.ui
 

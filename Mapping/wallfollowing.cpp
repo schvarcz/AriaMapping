@@ -1,7 +1,8 @@
 #include "wallfollowing.h"
 
 WallFollowing::WallFollowing(Robot *robot) :
-    QObject()
+    QObject(),
+    run(true)
 {
     mRobot = robot;
 

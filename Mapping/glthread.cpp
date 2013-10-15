@@ -23,10 +23,9 @@ void GLThread::stop()
 void GLThread::run()
 {
 
-    msleep(500);
+    msleep(5000);
     while(doRendering)
     {
-        cout << "Rendering" << endl;
         mGLWidget->makeCurrent();
         if(doResize)
         {
